@@ -1,0 +1,292 @@
+{
+  "info": {
+    "name": "My API Collection",
+    "description": "This is an automatically generated Postman collection",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "host": "http://localhost:9000",
+  "item": [
+    {
+      "name": "Users",
+      "item": [
+        {
+          "name": "users",
+          "request": {
+            "method": "get",
+            "url": {
+              "raw": "http://localhost:9000/api/v1/users/",
+              "protocol": "http",
+              "host": [
+                "http://localhost:9000"
+              ],
+              "port": "9000",
+              "path": [
+                "api",
+                "v1",
+                "users"
+              ]
+            },
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "jwt {{token}}"
+              }
+            ]
+          }
+        },
+        {
+          "name": "me",
+          "request": {
+            "method": "get",
+            "url": {
+              "raw": "http://localhost:9000/api/v1/users/me",
+              "protocol": "http",
+              "host": [
+                "http://localhost:9000"
+              ],
+              "port": "9000",
+              "path": [
+                "api",
+                "v1",
+                "users",
+                "me"
+              ]
+            },
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "jwt {{token}}"
+              }
+            ]
+          }
+        },
+        {
+          "name": "passwordRequest",
+          "request": {
+            "method": "post",
+            "url": {
+              "raw": "http://localhost:9000/api/v1/users/passwordRequest",
+              "protocol": "http",
+              "host": [
+                "http://localhost:9000"
+              ],
+              "port": "9000",
+              "path": [
+                "api",
+                "v1",
+                "users",
+                "passwordRequest"
+              ]
+            }
+          }
+        },
+        {
+          "name": ":idRequest",
+          "request": {
+            "method": "patch",
+            "url": {
+              "raw": "http://localhost:9000/api/v1/users/passwordRequest/:idRequest",
+              "protocol": "http",
+              "host": [
+                "http://localhost:9000"
+              ],
+              "port": "9000",
+              "path": [
+                "api",
+                "v1",
+                "users",
+                "passwordRequest",
+                ":idRequest"
+              ]
+            }
+          }
+        },
+        {
+          "name": ":id",
+          "request": {
+            "method": "get",
+            "url": {
+              "raw": "http://localhost:9000/api/v1/users/:id",
+              "protocol": "http",
+              "host": [
+                "http://localhost:9000"
+              ],
+              "port": "9000",
+              "path": [
+                "api",
+                "v1",
+                "users",
+                ":id"
+              ]
+            },
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "jwt {{token}}"
+              }
+            ]
+          }
+        },
+        {
+          "name": "changeUserRole",
+          "request": {
+            "method": "patch",
+            "url": {
+              "raw": "http://localhost:9000/api/v1/users/role/changeUserRole",
+              "protocol": "http",
+              "host": [
+                "http://localhost:9000"
+              ],
+              "port": "9000",
+              "path": [
+                "api",
+                "v1",
+                "users",
+                "role",
+                "changeUserRole"
+              ]
+            },
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "jwt {{token}}"
+              }
+            ]
+          }
+        },
+        {
+          "name": "userSearch",
+          "request": {
+            "method": "post",
+            "url": {
+              "raw": "http://localhost:9000/api/v1/users/userSearch",
+              "protocol": "http",
+              "host": [
+                "http://localhost:9000"
+              ],
+              "port": "9000",
+              "path": [
+                "api",
+                "v1",
+                "users",
+                "userSearch"
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Auth",
+      "item": [
+        {
+          "name": "register",
+          "request": {
+            "method": "post",
+            "url": {
+              "raw": "http://localhost:9000/api/v1/auth/register",
+              "protocol": "http",
+              "host": [
+                "http://localhost:9000"
+              ],
+              "port": "9000",
+              "path": [
+                "api",
+                "v1",
+                "auth",
+                "register"
+              ]
+            }
+          }
+        },
+        {
+          "name": "login",
+          "request": {
+            "method": "post",
+            "url": {
+              "raw": "http://localhost:9000/api/v1/auth/login",
+              "protocol": "http",
+              "host": [
+                "http://localhost:9000"
+              ],
+              "port": "9000",
+              "path": [
+                "api",
+                "v1",
+                "auth",
+                "login"
+              ]
+            }
+          }
+        },
+        {
+          "name": "google",
+          "request": {
+            "method": "get",
+            "url": {
+              "raw": "http://localhost:9000/api/v1/auth/google",
+              "protocol": "http",
+              "host": [
+                "http://localhost:9000"
+              ],
+              "port": "9000",
+              "path": [
+                "api",
+                "v1",
+                "auth",
+                "google"
+              ]
+            },
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "jwt {{token}}"
+              }
+            ]
+          }
+        },
+        {
+          "name": "callback",
+          "request": {
+            "method": "get",
+            "url": {
+              "raw": "http://localhost:9000/api/v1/auth/google/callback",
+              "protocol": "http",
+              "host": [
+                "http://localhost:9000"
+              ],
+              "port": "9000",
+              "path": [
+                "api",
+                "v1",
+                "auth",
+                "google",
+                "callback"
+              ]
+            }
+          }
+        },
+        {
+          "name": "logout",
+          "request": {
+            "method": "get",
+            "url": {
+              "raw": "http://localhost:9000/api/v1/auth/logout",
+              "protocol": "http",
+              "host": [
+                "http://localhost:9000"
+              ],
+              "port": "9000",
+              "path": [
+                "api",
+                "v1",
+                "auth",
+                "logout"
+              ]
+            }
+          }
+        }
+      ]
+    }
+  ]
+}
