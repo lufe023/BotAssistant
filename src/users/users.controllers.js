@@ -4,7 +4,7 @@ const uuid = require("uuid");
 const Users = require("../models/users.models");
 const { hashPassword } = require("../utils/crypto");
 const { Model } = require("sequelize");
-const Funds = require("../models/funds.models");
+
 const Roles = require("../models/roles.models");
 const { Sequelize, Op } = require("sequelize");
 const getAllUsers = async (offset, limit) => {
@@ -15,7 +15,7 @@ const getAllUsers = async (offset, limit) => {
             exclude: ["password"],
         },
 
-        include: [{ model: Funds, as: "fondos" }, { model: Roles }],
+        include: [{ model: Roles }],
         attributes: { exclude: ["password"] },
     });
     return data;
@@ -26,7 +26,7 @@ const getUserById = async (id) => {
         where: {
             id: id,
         },
-        include: [{ model: Funds, as: "fondos" }, { model: Roles }],
+        include: [{ model: Roles }],
         attributes: { exclude: ["password"] },
     });
     return data;

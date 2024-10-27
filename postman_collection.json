@@ -4,7 +4,7 @@
     "description": "This is an automatically generated Postman collection",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
   },
-  "host": "http://localhost:9000",
+  "host": "localhost",
   "item": [
     {
       "name": "Users",
@@ -14,10 +14,10 @@
           "request": {
             "method": "get",
             "url": {
-              "raw": "http://localhost:9000/api/v1/users/",
+              "raw": "localhost/api/v1/users/",
               "protocol": "http",
               "host": [
-                "http://localhost:9000"
+                "localhost"
               ],
               "port": "9000",
               "path": [
@@ -39,10 +39,10 @@
           "request": {
             "method": "get",
             "url": {
-              "raw": "http://localhost:9000/api/v1/users/me",
+              "raw": "localhost/api/v1/users/me",
               "protocol": "http",
               "host": [
-                "http://localhost:9000"
+                "localhost"
               ],
               "port": "9000",
               "path": [
@@ -65,10 +65,10 @@
           "request": {
             "method": "post",
             "url": {
-              "raw": "http://localhost:9000/api/v1/users/passwordRequest",
+              "raw": "localhost/api/v1/users/passwordRequest",
               "protocol": "http",
               "host": [
-                "http://localhost:9000"
+                "localhost"
               ],
               "port": "9000",
               "path": [
@@ -85,10 +85,10 @@
           "request": {
             "method": "patch",
             "url": {
-              "raw": "http://localhost:9000/api/v1/users/passwordRequest/:idRequest",
+              "raw": "localhost/api/v1/users/passwordRequest/:idRequest",
               "protocol": "http",
               "host": [
-                "http://localhost:9000"
+                "localhost"
               ],
               "port": "9000",
               "path": [
@@ -106,10 +106,10 @@
           "request": {
             "method": "get",
             "url": {
-              "raw": "http://localhost:9000/api/v1/users/:id",
+              "raw": "localhost/api/v1/users/:id",
               "protocol": "http",
               "host": [
-                "http://localhost:9000"
+                "localhost"
               ],
               "port": "9000",
               "path": [
@@ -132,10 +132,10 @@
           "request": {
             "method": "patch",
             "url": {
-              "raw": "http://localhost:9000/api/v1/users/role/changeUserRole",
+              "raw": "localhost/api/v1/users/role/changeUserRole",
               "protocol": "http",
               "host": [
-                "http://localhost:9000"
+                "localhost"
               ],
               "port": "9000",
               "path": [
@@ -159,10 +159,10 @@
           "request": {
             "method": "post",
             "url": {
-              "raw": "http://localhost:9000/api/v1/users/userSearch",
+              "raw": "localhost/api/v1/users/userSearch",
               "protocol": "http",
               "host": [
-                "http://localhost:9000"
+                "localhost"
               ],
               "port": "9000",
               "path": [
@@ -184,10 +184,10 @@
           "request": {
             "method": "post",
             "url": {
-              "raw": "http://localhost:9000/api/v1/auth/register",
+              "raw": "localhost/api/v1/auth/register",
               "protocol": "http",
               "host": [
-                "http://localhost:9000"
+                "localhost"
               ],
               "port": "9000",
               "path": [
@@ -204,10 +204,10 @@
           "request": {
             "method": "post",
             "url": {
-              "raw": "http://localhost:9000/api/v1/auth/login",
+              "raw": "localhost/api/v1/auth/login",
               "protocol": "http",
               "host": [
-                "http://localhost:9000"
+                "localhost"
               ],
               "port": "9000",
               "path": [
@@ -224,10 +224,10 @@
           "request": {
             "method": "get",
             "url": {
-              "raw": "http://localhost:9000/api/v1/auth/google",
+              "raw": "localhost/api/v1/auth/google",
               "protocol": "http",
               "host": [
-                "http://localhost:9000"
+                "localhost"
               ],
               "port": "9000",
               "path": [
@@ -250,10 +250,10 @@
           "request": {
             "method": "get",
             "url": {
-              "raw": "http://localhost:9000/api/v1/auth/google/callback",
+              "raw": "localhost/api/v1/auth/google/callback",
               "protocol": "http",
               "host": [
-                "http://localhost:9000"
+                "localhost"
               ],
               "port": "9000",
               "path": [
@@ -271,10 +271,10 @@
           "request": {
             "method": "get",
             "url": {
-              "raw": "http://localhost:9000/api/v1/auth/logout",
+              "raw": "localhost/api/v1/auth/logout",
               "protocol": "http",
               "host": [
-                "http://localhost:9000"
+                "localhost"
               ],
               "port": "9000",
               "path": [
@@ -284,6 +284,139 @@
                 "logout"
               ]
             }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Rooms",
+      "item": [
+        {
+          "name": "rooms",
+          "request": {
+            "method": "get",
+            "url": {
+              "raw": "localhost/api/v1/rooms/",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "9000",
+              "path": [
+                "api",
+                "v1",
+                "rooms"
+              ]
+            },
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "jwt {{token}}"
+              }
+            ]
+          }
+        },
+        {
+          "name": ":id",
+          "request": {
+            "method": "get",
+            "url": {
+              "raw": "localhost/api/v1/rooms/:id",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "9000",
+              "path": [
+                "api",
+                "v1",
+                "rooms",
+                ":id"
+              ]
+            },
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "jwt {{token}}"
+              }
+            ]
+          }
+        },
+        {
+          "name": "rooms",
+          "request": {
+            "method": "post",
+            "url": {
+              "raw": "localhost/api/v1/rooms/",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "9000",
+              "path": [
+                "api",
+                "v1",
+                "rooms"
+              ]
+            },
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "jwt {{token}}"
+              }
+            ]
+          }
+        },
+        {
+          "name": ":id",
+          "request": {
+            "method": "put",
+            "url": {
+              "raw": "localhost/api/v1/rooms/:id",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "9000",
+              "path": [
+                "api",
+                "v1",
+                "rooms",
+                ":id"
+              ]
+            },
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "jwt {{token}}"
+              }
+            ]
+          }
+        },
+        {
+          "name": ":id",
+          "request": {
+            "method": "delete",
+            "url": {
+              "raw": "localhost/api/v1/rooms/:id",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "9000",
+              "path": [
+                "api",
+                "v1",
+                "rooms",
+                ":id"
+              ]
+            },
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "jwt {{token}}"
+              }
+            ]
           }
         }
       ]

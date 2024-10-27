@@ -1,5 +1,5 @@
 {
-  "name": "skeleton",
+  "name": "Bot Asistente",
   "version": "1.0.0",
   "description": "- Express - PostgreSQL - Sequelize ORM  - Autenticación con Tokens - Bcrypt para hashear contraseñas - Uso de Json Web Token",
   "main": "index.js",
@@ -25,8 +25,10 @@
     "passport-jwt": "^4.0.0",
     "pg": "^8.8.0",
     "pg-hstore": "^2.3.4",
+    "qrcode": "^1.5.4",
     "sequelize": "^6.24.0",
-    "uuid": "^9.0.0"
+    "uuid": "^9.0.0",
+    "whatsapp-web.js": "^1.26.0"
   },
   "devDependencies": {
     "nodemon": "^3.1.4",

@@ -10,11 +10,11 @@ const Users = db.define("users", {
     },
     firstName: {
         type: DataTypes.STRING,
-        allowNull: true, // Cambiado a true para que sea opcional
+        allowNull: true,
     },
     lastName: {
         type: DataTypes.STRING,
-        allowNull: true, // Cambiado a true para que sea opcional
+        allowNull: true,
     },
     email: {
         type: DataTypes.STRING,
@@ -26,10 +26,6 @@ const Users = db.define("users", {
     },
     password: {
         type: DataTypes.STRING,
-        allowNull: true, // Cambiado a true para que sea opcional
-    },
-    passwordRequest: {
-        type: DataTypes.UUID,
         allowNull: true,
     },
     active: {
@@ -37,15 +33,12 @@ const Users = db.define("users", {
         defaultValue: false,
     },
     phone: {
-        type: DataTypes.STRING, // +52
+        type: DataTypes.STRING,
         allowNull: true,
     },
     birthday: {
         type: DataTypes.DATEONLY,
         allowNull: true,
-    },
-    gender: {
-        type: DataTypes.STRING,
     },
     role: {
         type: DataTypes.INTEGER,
@@ -54,10 +47,14 @@ const Users = db.define("users", {
             model: Roles,
             key: "id",
         },
-        // defaultValue: 1,
+    },
+    address: {
+        type: DataTypes.STRING,
+        allowNull: true, // Campo específico para clientes, si necesario
     },
     country: {
         type: DataTypes.STRING,
+        allowNull: true,
     },
     googleId: {
         type: DataTypes.STRING,
@@ -82,5 +79,3 @@ const Users = db.define("users", {
 });
 
 module.exports = Users;
-
-/* */

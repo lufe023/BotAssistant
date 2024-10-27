@@ -12,8 +12,8 @@ passport.use(
             clientSecret: googleClientSecret,
             callbackURL:
                 process.env.NODE_ENV === "production"
-                    ? "https://socialmediaservices-production.up.railway.app/api/v1/auth/google/callback"
-                    : "http://localhost:9000/api/v1/auth/google/callback",
+                    ? "http://localhost:9000/api/v1/auth/google/callback"
+                    : "exp://192.168.1.210:8081/api/v1/auth/google/callback",
         },
         async (accessToken, refreshToken, profile, done) => {
             try {

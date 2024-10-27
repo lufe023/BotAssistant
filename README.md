@@ -1,4 +1,4 @@
-# SocialMediaServices
+# Bot Asistente
 
 **SocialMediaServices** es una interfaz avanzada para interactuar con la API de [jqaw.org](https://jqaw.org/). Esta aplicación está diseñada para mejorar la experiencia del usuario al trabajar con servicios de redes sociales, proporcionando una interfaz intuitiva y funcionalidades mejoradas para gestionar y analizar datos de redes sociales.
 

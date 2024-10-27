@@ -19,30 +19,20 @@ router.get(
 
 router.get("/google/callback", (req, res, next) => {
     passport.authenticate("google", { session: false }, (err, user, info) => {
-        const frontendHost =
-            process.env.FRONTEND_HOST || "http://localhost:5173";
-
-        const frontendHostWithoutTrailingSlash = frontendHost.replace(
-            /\/+$/,
-            ""
-        );
-
         if (err || !user) {
-            return res.redirect(
-                `${frontendHostWithoutTrailingSlash}#/login?error=${encodeURIComponent(
-                    "El usuario no está activo"
-                )}`
-            );
+            return res.status(401).json({
+                message: "El usuario no está activo",
+            });
         }
 
         const { token } = user;
 
-        res.redirect(
-            `${frontendHostWithoutTrailingSlash}#/login?token=${token}`
-        );
+        // Envía el token de vuelta como respuesta JSON
+        res.json({
+            token: token,
+        });
     })(req, res, next);
 });
-
 // Ruta para cerrar sesión
 router.get("/logout", (req, res) => {
     req.logout((err) => {

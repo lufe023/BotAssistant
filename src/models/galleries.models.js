@@ -1,7 +1,7 @@
 const db = require("../utils/database");
 const { DataTypes } = require("sequelize");
 
-const Services = db.define("services", {
+const Galleries = db.define("galleries", {
     id: {
         type: DataTypes.UUID,
         primaryKey: true,
@@ -11,14 +11,10 @@ const Services = db.define("services", {
         type: DataTypes.STRING,
         allowNull: false,
     },
-    price: {
-        type: DataTypes.DECIMAL(10, 2),
-        allowNull: false,
-    },
-    description: {
+    details: {
         type: DataTypes.TEXT,
         allowNull: true,
     },
 });
 
-module.exports = Services;
+module.exports = Galleries;

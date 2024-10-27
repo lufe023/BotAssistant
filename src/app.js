@@ -10,13 +10,11 @@ const fs = require("fs");
 //? Files
 const { port } = require("./config");
 //* Routes
-const configurationRouter = require("./configuration/configuration.router");
 const userRouter = require("./users/users.router");
 const authRouter = require("./auth/auth.router");
-const transactionRouter = require("./FundTransactions/fundTransactions.router");
-const services = require("./services/services.router");
-const serviceOrders = require("./purchases/purchases.router");
-const audit = require("./audit/audit.routers");
+const whatsappRouter = require("./whatsapp/whatsapp.router");
+const imagesRouter = require("./images/images.router");
+const roomsRouter = require("./rooms/rooms.router");
 
 const initModels = require("./models/initModels");
 const path = require("path");
@@ -61,13 +59,11 @@ app.get("/", (req, res) => {
     res.sendFile(path.join(__dirname, "public", "index.html"));
 });
 
-app.use("/api/v1/configurations", configurationRouter);
 app.use("/api/v1/users", userRouter);
 app.use("/api/v1/auth", authRouter);
-app.use("/api/v1/transactions", transactionRouter);
-app.use("/api/v1/services", services);
-app.use("/api/v1/serviceOrders", serviceOrders);
-app.use("/api/v1/audit", audit);
+app.use("/api/v1/whatsapp", whatsappRouter);
+app.use("/api/v1/images", imagesRouter);
+app.use("/api/v1/rooms", roomsRouter);
 
 // Endpoint para generar la colección de Postman
 app.get("/api/v1/generate-postman-collection", (req, res) => {
@@ -78,7 +74,7 @@ app.get("/api/v1/generate-postman-collection", (req, res) => {
                 "This is an automatically generated Postman collection",
             schema: "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
         },
-        host: `http://localhost:${port}`,
+        host: `localhost`,
         item: [],
     };
 
@@ -86,7 +82,7 @@ app.get("/api/v1/generate-postman-collection", (req, res) => {
     const groupedRoutes = {
         users: [],
         auth: [],
-        // Transaction: [],
+        rooms: [],
     };
 
     // Función para extraer el último segmento del path
@@ -130,7 +126,7 @@ app.get("/api/v1/generate-postman-collection", (req, res) => {
     const routers = [
         { basePath: "/api/v1/users", router: userRouter },
         { basePath: "/api/v1/auth", router: authRouter },
-        // { basePath: "/api/v1/transactions", router: transactionRouter },
+        { basePath: "/api/v1/rooms", router: roomsRouter },
     ];
 
     routers.forEach(({ basePath, router }) => {
