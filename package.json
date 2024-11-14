@@ -1,7 +1,7 @@
 {
   "name": "Bot Asistente",
   "version": "1.0.0",
-  "description": "- Express - PostgreSQL - Sequelize ORM  - Autenticación con Tokens - Bcrypt para hashear contraseñas - Uso de Json Web Token",
+  "description": "Bot Asistente y Sistema para manejo de Hotel, el bot puede tomar reservaciones via whatsapp Express - PostgreSQL - Sequelize ORM  - Autenticación con Tokens - Bcrypt para hashear contraseñas - Uso de Json Web Token",
   "main": "index.js",
   "scripts": {
     "start": "node ./src/app.js",
