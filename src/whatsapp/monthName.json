@@ -1,0 +1,50 @@
+{
+    "01": {
+        "name": "enero",
+        "variations": ["enero", "ene", "enero ", "enero.", "ener", "January", "Jan"]
+    },
+    "02": {
+        "name": "febrero",
+        "variations": ["febrero", "feb", "febrero ", "febrero.", "febr", "February"]
+    },
+    "03": {
+        "name": "marzo",
+        "variations": ["marzo", "mar", "marzo ", "marzo.", "marz"]
+    },
+    "04": {
+        "name": "abril",
+        "variations": ["abril", "abr", "abril ", "abril.", "abri", "Apr"]
+    },
+    "05": {
+        "name": "mayo",
+        "variations": ["mayo", "may", "mayo ", "mayo.", "mayo"]
+    },
+    "06": {
+        "name": "junio",
+        "variations": ["junio", "jun", "junio ", "junio.", "juni"]
+    },
+    "07": {
+        "name": "julio",
+        "variations": ["julio", "jul", "julio ", "julio.", "juli"]
+    },
+    "08": {
+        "name": "agosto",
+        "variations": ["agosto", "ago", "agosto ", "agosto.", "agost", "Aug"]
+    },
+    "09": {
+        "name": "septiembre",
+        "variations": ["septiembre", "sep", "septiembre ", "septiembre.", "sept", "setiembre", "setienbre", "septienbre" ]
+    },
+    "10": {
+        "name": "octubre",
+        "variations": ["octubre", "oct", "octubre ", "octubre.", "octu"]
+    },
+    "11": {
+        "name": "noviembre",
+        "variations": ["noviembre", "nov", "noviembre ", "noviembre.", "novemb", "novimbre", "novienbre"]
+    },
+    "12": {
+        "name": "diciembre",
+        "variations": ["diciembre", "dic", "diciembre ", "diciembre.", "dicie", "Dec", "dicienbre"]
+    }
+}

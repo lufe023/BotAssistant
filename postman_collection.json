@@ -1,0 +1,648 @@
+{
+  "info": {
+    "name": "Hotel Asistant Bot System",
+    "description": "This is an automatically generated Postman collection",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "host": "localhost",
+  "item": [
+    {
+      "name": "Users",
+      "item": [
+        {
+          "name": "users",
+          "request": {
+            "method": "get",
+            "url": {
+              "raw": "localhost/api/v1/users/",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "9000",
+              "path": [
+                "api",
+                "v1",
+                "users"
+              ]
+            },
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "jwt {{token}}"
+              }
+            ]
+          }
+        },
+        {
+          "name": "me",
+          "request": {
+            "method": "get",
+            "url": {
+              "raw": "localhost/api/v1/users/me",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "9000",
+              "path": [
+                "api",
+                "v1",
+                "users",
+                "me"
+              ]
+            },
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "jwt {{token}}"
+              }
+            ]
+          }
+        },
+        {
+          "name": "passwordRequest",
+          "request": {
+            "method": "post",
+            "url": {
+              "raw": "localhost/api/v1/users/passwordRequest",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "9000",
+              "path": [
+                "api",
+                "v1",
+                "users",
+                "passwordRequest"
+              ]
+            }
+          }
+        },
+        {
+          "name": ":idRequest",
+          "request": {
+            "method": "patch",
+            "url": {
+              "raw": "localhost/api/v1/users/passwordRequest/:idRequest",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "9000",
+              "path": [
+                "api",
+                "v1",
+                "users",
+                "passwordRequest",
+                ":idRequest"
+              ]
+            }
+          }
+        },
+        {
+          "name": ":id",
+          "request": {
+            "method": "get",
+            "url": {
+              "raw": "localhost/api/v1/users/:id",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "9000",
+              "path": [
+                "api",
+                "v1",
+                "users",
+                ":id"
+              ]
+            },
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "jwt {{token}}"
+              }
+            ]
+          }
+        },
+        {
+          "name": "changeUserRole",
+          "request": {
+            "method": "patch",
+            "url": {
+              "raw": "localhost/api/v1/users/role/changeUserRole",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "9000",
+              "path": [
+                "api",
+                "v1",
+                "users",
+                "role",
+                "changeUserRole"
+              ]
+            },
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "jwt {{token}}"
+              }
+            ]
+          }
+        },
+        {
+          "name": "userSearch",
+          "request": {
+            "method": "post",
+            "url": {
+              "raw": "localhost/api/v1/users/userSearch",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "9000",
+              "path": [
+                "api",
+                "v1",
+                "users",
+                "userSearch"
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Auth",
+      "item": [
+        {
+          "name": "register",
+          "request": {
+            "method": "post",
+            "url": {
+              "raw": "localhost/api/v1/auth/register",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "9000",
+              "path": [
+                "api",
+                "v1",
+                "auth",
+                "register"
+              ]
+            }
+          }
+        },
+        {
+          "name": "login",
+          "request": {
+            "method": "post",
+            "url": {
+              "raw": "localhost/api/v1/auth/login",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "9000",
+              "path": [
+                "api",
+                "v1",
+                "auth",
+                "login"
+              ]
+            }
+          }
+        },
+        {
+          "name": "google",
+          "request": {
+            "method": "get",
+            "url": {
+              "raw": "localhost/api/v1/auth/google",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "9000",
+              "path": [
+                "api",
+                "v1",
+                "auth",
+                "google"
+              ]
+            },
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "jwt {{token}}"
+              }
+            ]
+          }
+        },
+        {
+          "name": "callback",
+          "request": {
+            "method": "get",
+            "url": {
+              "raw": "localhost/api/v1/auth/google/callback",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "9000",
+              "path": [
+                "api",
+                "v1",
+                "auth",
+                "google",
+                "callback"
+              ]
+            }
+          }
+        },
+        {
+          "name": "logout",
+          "request": {
+            "method": "get",
+            "url": {
+              "raw": "localhost/api/v1/auth/logout",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "9000",
+              "path": [
+                "api",
+                "v1",
+                "auth",
+                "logout"
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Rooms",
+      "item": [
+        {
+          "name": "rooms",
+          "request": {
+            "method": "get",
+            "url": {
+              "raw": "localhost/api/v1/rooms/",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "9000",
+              "path": [
+                "api",
+                "v1",
+                "rooms"
+              ]
+            }
+          }
+        },
+        {
+          "name": ":id",
+          "request": {
+            "method": "get",
+            "url": {
+              "raw": "localhost/api/v1/rooms/:id",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "9000",
+              "path": [
+                "api",
+                "v1",
+                "rooms",
+                ":id"
+              ]
+            },
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "jwt {{token}}"
+              }
+            ]
+          }
+        },
+        {
+          "name": "rooms",
+          "request": {
+            "method": "post",
+            "url": {
+              "raw": "localhost/api/v1/rooms/",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "9000",
+              "path": [
+                "api",
+                "v1",
+                "rooms"
+              ]
+            },
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "jwt {{token}}"
+              }
+            ]
+          }
+        },
+        {
+          "name": ":id",
+          "request": {
+            "method": "put",
+            "url": {
+              "raw": "localhost/api/v1/rooms/:id",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "9000",
+              "path": [
+                "api",
+                "v1",
+                "rooms",
+                ":id"
+              ]
+            },
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "jwt {{token}}"
+              }
+            ]
+          }
+        },
+        {
+          "name": ":id",
+          "request": {
+            "method": "delete",
+            "url": {
+              "raw": "localhost/api/v1/rooms/:id",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "9000",
+              "path": [
+                "api",
+                "v1",
+                "rooms",
+                ":id"
+              ]
+            },
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "jwt {{token}}"
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Reservations",
+      "item": [
+        {
+          "name": "reservations",
+          "request": {
+            "method": "get",
+            "url": {
+              "raw": "localhost/api/v1/reservations/",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "9000",
+              "path": [
+                "api",
+                "v1",
+                "reservations"
+              ]
+            },
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "jwt {{token}}"
+              }
+            ]
+          }
+        },
+        {
+          "name": "date-range",
+          "request": {
+            "method": "get",
+            "url": {
+              "raw": "localhost/api/v1/reservations/date-range",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "9000",
+              "path": [
+                "api",
+                "v1",
+                "reservations",
+                "date-range"
+              ]
+            }
+          }
+        },
+        {
+          "name": "available-dates",
+          "request": {
+            "method": "get",
+            "url": {
+              "raw": "localhost/api/v1/reservations/available-dates",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "9000",
+              "path": [
+                "api",
+                "v1",
+                "reservations",
+                "available-dates"
+              ]
+            }
+          }
+        },
+        {
+          "name": ":id",
+          "request": {
+            "method": "get",
+            "url": {
+              "raw": "localhost/api/v1/reservations/:id",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "9000",
+              "path": [
+                "api",
+                "v1",
+                "reservations",
+                ":id"
+              ]
+            },
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "jwt {{token}}"
+              }
+            ]
+          }
+        },
+        {
+          "name": "reservations",
+          "request": {
+            "method": "post",
+            "url": {
+              "raw": "localhost/api/v1/reservations/",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "9000",
+              "path": [
+                "api",
+                "v1",
+                "reservations"
+              ]
+            },
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "jwt {{token}}"
+              }
+            ]
+          }
+        },
+        {
+          "name": ":id",
+          "request": {
+            "method": "put",
+            "url": {
+              "raw": "localhost/api/v1/reservations/:id",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "9000",
+              "path": [
+                "api",
+                "v1",
+                "reservations",
+                ":id"
+              ]
+            },
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "jwt {{token}}"
+              }
+            ]
+          }
+        },
+        {
+          "name": ":id",
+          "request": {
+            "method": "delete",
+            "url": {
+              "raw": "localhost/api/v1/reservations/:id",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "9000",
+              "path": [
+                "api",
+                "v1",
+                "reservations",
+                ":id"
+              ]
+            },
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "jwt {{token}}"
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Summary",
+      "item": [
+        {
+          "name": "summary",
+          "request": {
+            "method": "get",
+            "url": {
+              "raw": "localhost/api/v1/summary/",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "9000",
+              "path": [
+                "api",
+                "v1",
+                "summary"
+              ]
+            },
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "jwt {{token}}"
+              }
+            ]
+          }
+        },
+        {
+          "name": "rooms",
+          "request": {
+            "method": "get",
+            "url": {
+              "raw": "localhost/api/v1/summary/rooms",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "9000",
+              "path": [
+                "api",
+                "v1",
+                "summary",
+                "rooms"
+              ]
+            },
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "jwt {{token}}"
+              }
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}
