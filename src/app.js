@@ -17,7 +17,8 @@ const imagesRouter = require("./images/images.router");
 const roomsRouter = require("./rooms/rooms.router");
 const reservationsRouter = require("./reservations/reservations.router");
 const summaryRouter = require("./summary/summary.router");
-
+const galleryImagesRoutes = require("./galleryImages/galleryImages.routes");
+const galleriesRoutes = require("./galleries/galleries.routes");
 const initModels = require("./models/initModels");
 const path = require("path");
 
@@ -46,7 +47,7 @@ db.authenticate()
     });
 
 // db.sync({ alter: true })
-db.sync({ alter: false })
+db.sync({ alter: true })
     .then(() => {
         console.log("Database Synced");
     })
@@ -60,6 +61,9 @@ app.get("/", (req, res) => {
     res.sendFile(path.join(__dirname, "public", "index.html"));
 });
 
+// Middleware para servir archivos estáticos
+app.use("/uploads", express.static(path.join(__dirname, "uploads")));
+
 app.use("/api/v1/users", userRouter);
 app.use("/api/v1/auth", authRouter);
 app.use("/api/v1/whatsapp", whatsappRouter);
@@ -67,6 +71,9 @@ app.use("/api/v1/images", imagesRouter);
 app.use("/api/v1/rooms", roomsRouter);
 app.use("/api/v1/reservations", reservationsRouter);
 app.use("/api/v1/summary", summaryRouter);
+app.use("/api/v1/galleries", galleriesRoutes);
+app.use("/api/v1/gallery-images", galleryImagesRoutes);
+
 // Endpoint para generar la colección de Postman
 app.get("/api/v1/generate-postman-collection", (req, res) => {
     const collection = {

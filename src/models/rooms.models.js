@@ -25,6 +25,9 @@ const Rooms = db.define("rooms", {
         type: DataTypes.INTEGER,
         allowNull: false,
     },
+    bedQuantity: {
+        type: DataTypes.INTEGER,
+    },
     galleryId: {
         type: DataTypes.UUID,
         allowNull: true,

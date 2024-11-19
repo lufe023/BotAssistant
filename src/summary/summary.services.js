@@ -39,7 +39,7 @@ const getRoomStatusSummary = (req, res) => {
     summaryControllers
         .getRoomStatusSummary(ubication)
         .then((data) => {
-            res.status(201).json(data);
+            res.status(200).json(data);
         })
         .catch((err) => {
             res.status(400).json({ message: err.message });

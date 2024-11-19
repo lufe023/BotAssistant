@@ -1,4 +1,4 @@
-const { Op } = require("sequelize"); // Para operaciones avanzadas en fechas
+const { Op, Sequelize } = require("sequelize"); // Para operaciones avanzadas en fechas
 const Rooms = require("../models/rooms.models");
 const Galleries = require("../models/galleries.models");
 const Reservations = require("../models/reservations.models");
@@ -43,8 +43,8 @@ const getRoomStatusSummary = async (ubication) => {
     // Contar habitaciones ocupadas hoy en la ubicación especificada (o en todas si `ubication` es falsy)
     const pendingReservations = await Reservations.count({
         where: {
-            checkInDate: { [Op.lte]: today },
-            checkOutDate: { [Op.gte]: today },
+            // checkInDate: { [Op.lte]: today },
+            // checkOutDate: { [Op.gte]: today },
             status: "pending",
         },
         include: [
@@ -53,6 +53,14 @@ const getRoomStatusSummary = async (ubication) => {
                 where: roomConditions, // Condición de ubicación si existe, o ninguna si es falsy
             },
         ],
+    });
+
+    // Llamar todas las habitaciones
+    const allRooms = await Rooms.findAll({
+        where: {
+            ...roomConditions,
+        },
+        order: [["roomNumber", "ASC"]],
     });
 
     // Contar habitaciones en limpieza en la ubicación especificada (o en todas)
@@ -79,7 +87,7 @@ const getRoomStatusSummary = async (ubication) => {
         },
     });
 
-    // Contar habitaciones reparando en la ubicación especificada (o en todas)
+    // Contar habitaciones ocupadas en la ubicación especificada (o en todas)
     const roomsOccupiedToday = await Rooms.count({
         where: {
             ...roomConditions,
@@ -87,12 +95,22 @@ const getRoomStatusSummary = async (ubication) => {
         },
     });
 
+    // Obtener todas las ubicaciones únicas y ordenarlas alfabéticamente
+    const allUbications = await Rooms.findAll({
+        attributes: [
+            [Sequelize.fn("DISTINCT", Sequelize.col("ubication")), "ubication"],
+        ],
+        order: [[Sequelize.col("ubication"), "ASC"]], // Ordenar las ubicaciones alfabéticamente
+    }).then((locations) => locations.map((loc) => loc.ubication));
+
     return {
         occupied: roomsOccupiedToday,
         cleaning: roomsCleaningToday,
         available: roomsAvailable,
         repairing: roomsRepairing,
         pendingReservations,
+        allRooms,
+        allUbications, // Agregamos el dato de todas las ubicaciones
     };
 };
 

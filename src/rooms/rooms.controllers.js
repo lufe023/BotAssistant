@@ -2,6 +2,7 @@
 const Rooms = require("../models/rooms.models");
 const Galleries = require("../models/galleries.models");
 const uuid = require("uuid");
+const Reservations = require("../models/reservations.models");
 const getAllRooms = async (offset, limit) => {
     const data = await Rooms.findAndCountAll({
         offset: offset,
@@ -13,7 +14,7 @@ const getAllRooms = async (offset, limit) => {
 
 const getRoomById = async (id) => {
     return await Rooms.findByPk(id, {
-        include: [{ model: Galleries, as: "gallery" }],
+        include: [{ model: Galleries, as: "gallery" }, { model: Reservations }],
     });
 };
 
