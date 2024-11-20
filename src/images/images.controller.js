@@ -36,6 +36,10 @@ const getImage = async (req, res) => {
             `../../uploads/images/teams/${image}`
         );
     }
+    if (type == "images") {
+        //funcionando
+        pathImage = path.resolve(__dirname, `../../uploads/images/${image}`);
+    }
     if (type == "qr") {
         //funcionando
         pathImage = path.resolve(__dirname, `../whatsapp/qr/qr.png`);

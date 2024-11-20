@@ -1,10 +1,12 @@
-const { v4: uuidv4 } = require("uuid");
 const path = require("path");
+const { v4: uuidv4 } = require("uuid");
+const Galleries = require("../models/galleries.models");
 const GalleryImages = require("../models/galleryImages.models");
+const Rooms = require("../models/rooms.models");
 
-const uploadImage = async (req, res) => {
+const uploadImages = async (req, res) => {
     try {
-        const { galleryId, altText } = req.body;
+        const { galleryName, roomId, descriptions } = req.body;
         const files = req.files;
 
         if (!files || files.length === 0) {
@@ -13,15 +15,47 @@ const uploadImage = async (req, res) => {
                 .json({ message: "No se ha subido ninguna imagen." });
         }
 
-        // Guardar todas las imágenes en la base de datos
+        let galleryId;
+
+        // Crear o encontrar la galería
+        if (galleryName) {
+            const existingGallery = await Galleries.findOne({
+                where: { name: galleryName },
+            });
+            if (existingGallery) {
+                galleryId = existingGallery.id;
+            } else {
+                const newGallery = await Galleries.create({
+                    id: uuidv4(),
+                    name: galleryName,
+                    details: "Galería creada automáticamente",
+                });
+                galleryId = newGallery.id;
+            }
+        } else {
+            return res
+                .status(400)
+                .json({ message: "El nombre de la galería es requerido." });
+        }
+
+        // Asociar la galería con una habitación, si se proporciona
+        if (roomId) {
+            await Rooms.update({ galleryId }, { where: { id: roomId } });
+        }
+
+        // Guardar imágenes en la base de datos
         const newImages = await Promise.all(
-            files.map((file) => {
-                const imageUrl = path.join("uploads/images", file.filename);
+            files.map((file, index) => {
+                const altText =
+                    descriptions[index] ||
+                    `Descripción de la imagen ${index + 1}`;
+                const imageUrl = path.join(file.filename);
+
                 return GalleryImages.create({
                     id: uuidv4(),
                     galleryId,
                     imageUrl,
-                    altText: altText || null,
+                    altText,
                 });
             })
         );
@@ -34,11 +68,9 @@ const uploadImage = async (req, res) => {
         console.error(error);
         res.status(500).json({
             message: "Error al subir las imágenes.",
-            error,
+            error: error.message,
         });
     }
 };
 
-module.exports = {
-    uploadImage,
-};
+module.exports = { uploadImages };
