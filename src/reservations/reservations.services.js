@@ -50,10 +50,10 @@ const getReservationById = (req, res) => {
 };
 
 const createReservation = (req, res) => {
-    const { userId, roomId, checkInDate, checkOutDate } = req.body;
+    const { userId, roomId, checkIn, checkOut } = req.body;
 
     // Validación de datos mínimos
-    if (!userId || !roomId || !checkInDate || !checkOutDate) {
+    if (!userId || !roomId || !checkIn || !checkOut) {
         return res
             .status(400)
             .json({ message: "Datos incompletos para la reservación" });

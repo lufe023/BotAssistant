@@ -45,7 +45,7 @@ const getRoomStatusSummary = async (ubication) => {
         where: {
             // checkInDate: { [Op.lte]: today },
             // checkOutDate: { [Op.gte]: today },
-            status: "pending",
+            status: "Pending",
         },
         include: [
             {

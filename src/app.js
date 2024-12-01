@@ -6,9 +6,15 @@ const session = require("express-session");
 const passport = require("./utils/passport");
 const db = require("./utils/database");
 const fs = require("fs");
+const http = require("http");
+const { Server } = require("socket.io");
+const chatFlow = require("./whatsapp/chatFlow");
+const notificationsControllers = require("./notifications/notifications.controllers");
+const jwt = require("jsonwebtoken");
+const chatServices = require("./chats/chats.controllers");
 
 //? Files
-const { port } = require("./config");
+const { port, jwtSecret } = require("./config");
 //* Routes
 const userRouter = require("./users/users.router");
 const authRouter = require("./auth/auth.router");
@@ -19,13 +25,98 @@ const reservationsRouter = require("./reservations/reservations.router");
 const summaryRouter = require("./summary/summary.router");
 const galleryImagesRoutes = require("./galleryImages/galleryImages.routes");
 const galleriesRoutes = require("./galleries/galleries.routes");
+const notificationsRouter = require("./notifications/notifications.router");
+const chatsRouter = require("./chats/chats.routes");
+
 const initModels = require("./models/initModels");
 const path = require("path");
+const {
+    setIoInstance,
+    removeConnectedUser,
+    addConnectedUser,
+} = require("./utils/socketManager");
 
 //? Initial Configs
 const app = express();
-app.use(cors());
+
+// Configurar CORS para permitir solicitudes desde localhost:5173
+app.use(
+    cors({
+        origin: "*",
+        methods: "*", //["GET", "POST", "PUT", "PATH", "DELETE"],
+        allowedHeaders: ["Content-Type", "Authorization"],
+    })
+);
+
+const server = http.createServer(app);
+const io = new Server(server, {
+    cors: { origin: "*" },
+});
+
+notificationsControllers.setIoInstance(io);
+
+io.on("connection", (socket) => {
+    // Manejar autenticación (ya implementado)
+    socket.on("authenticate", (token) => {
+        try {
+            const decoded = jwt.verify(token, jwtSecret);
+            const userId = decoded.id;
+
+            if (userId) {
+                notificationsControllers.setNotificationsUsers(
+                    userId,
+                    socket.id
+                );
+                console.log(
+                    `Usuario autenticado: ${userId} y socket socket.id`
+                );
+            }
+        } catch (error) {
+            console.error("Error al autenticar:", error.message);
+        }
+    });
+
+    // Escuchar mensajes enviados
+    socket.on("message", async (data, token) => {
+        try {
+            const { chatId, receiverId, message } = data;
+
+            // Verificar el token y extraer el senderId
+            const decoded = jwt.verify(token, process.env.JWT_SECRET);
+            const senderId = decoded.id;
+
+            if (!message || !receiverId) {
+                throw new Error(
+                    'Los campos "message" y "receiverId" son obligatorios'
+                );
+            }
+
+            const newMessage = await chatServices.createMessage(
+                chatId,
+                { receiverId, message },
+                senderId
+            );
+
+            // Emitir el mensaje a los usuarios conectados
+            io.to(chatId).emit("message", newMessage);
+        } catch (error) {
+            console.error("Error al manejar el mensaje:", error.message);
+        }
+    });
+
+    socket.on("disconnect", () => {
+        console.log(`Socket desconectado: ${socket.id}`);
+    });
+});
+
 app.use(express.static(path.join(__dirname, "public")));
+
+const PORT = process.env.PORT || 9000;
+
+// Iniciar el servidor
+server.listen(PORT, () => {
+    console.log(`Servidor Express y Socket.io corriendo en el puerto ${PORT}`);
+});
 
 app.use(express.json());
 app.use(
@@ -73,6 +164,8 @@ app.use("/api/v1/reservations", reservationsRouter);
 app.use("/api/v1/summary", summaryRouter);
 app.use("/api/v1/galleries", galleriesRoutes);
 app.use("/api/v1/gallery-images", galleryImagesRoutes);
+app.use("/api/v1/notifications", notificationsRouter);
+app.use("/api/v1/chats", chatsRouter);
 
 // Endpoint para generar la colección de Postman
 app.get("/api/v1/generate-postman-collection", (req, res) => {
@@ -207,9 +300,3 @@ app.get("/api/v1/generate-postman-collection", (req, res) => {
 
     res.json(collection);
 });
-
-app.listen(port, () => {
-    console.log(`Server started at port ${port}`);
-});
-
-/**/

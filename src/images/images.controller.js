@@ -62,7 +62,7 @@ const deleteImageController = async (folder, imageName) => {
     try {
         const imagePath = path.resolve(
             __dirname,
-            `../../uploads/images/${folder}/${imageName}`
+            `../../uploads/${folder}/${imageName}`
         );
 
         if (await fs.existsSync(imagePath)) {

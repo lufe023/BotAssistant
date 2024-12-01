@@ -1,45 +1,42 @@
-// rooms.routes.js
 const express = require("express");
-const passport = require("passport");
-const roleValidate = require("../middlewares/role.middleware"); // Asegúrate de tener este middleware
-
-const roomsServices = require("./rooms.services");
-
 const router = express.Router();
-
-router.get("/", roomsServices.getAllRooms);
+const roomIssuesServices = require("./roomIssues.services");
+const passport = require("passport");
+const roleValidate = require("../middlewares/role.middleware");
 
 router.get(
-    "/history/:id",
+    "/",
     passport.authenticate("jwt", { session: false }),
     roleValidate(["Administrator"]),
-    roomsServices.getRoomHistory
+    roomIssuesServices.getAllRoomIssues
 );
 
 router.get(
     "/:id",
     passport.authenticate("jwt", { session: false }),
-    roleValidate(["Administrator"]),
-    roomsServices.getRoomById
+    roleValidate(["Administrator", "Client"]),
+    roomIssuesServices.getRoomIssueById
 );
 
 router.post(
     "/",
     passport.authenticate("jwt", { session: false }),
-    roleValidate(["Administrator"]),
-    roomsServices.createRoom
+    roleValidate(["Administrator", "Client"]),
+    roomIssuesServices.createRoomIssue
 );
-router.put(
+
+router.patch(
     "/:id",
     passport.authenticate("jwt", { session: false }),
     roleValidate(["Administrator"]),
-    roomsServices.updateRoom
+    roomIssuesServices.updateRoomIssue
 );
+
 router.delete(
     "/:id",
     passport.authenticate("jwt", { session: false }),
     roleValidate(["Administrator"]),
-    roomsServices.deleteRoom
+    roomIssuesServices.deleteRoomIssue
 );
 
 module.exports = router;

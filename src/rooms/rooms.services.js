@@ -93,10 +93,28 @@ const deleteRoom = (req, res) => {
         });
 };
 
+const getRoomHistory = (req, res) => {
+    const { id } = req.params;
+    console.log("El id buscado es :" + id);
+    roomsControllers
+        .getRoomHistory(id)
+        .then((data) => {
+            if (data) {
+                res.status(200).json(data);
+            } else {
+                res.status(404).json({ message: "Room not found" });
+            }
+        })
+        .catch((err) => {
+            res.status(400).json({ message: err.message });
+        });
+};
+
 module.exports = {
     getAllRooms,
     getRoomById,
     createRoom,
     updateRoom,
     deleteRoom,
+    getRoomHistory,
 };

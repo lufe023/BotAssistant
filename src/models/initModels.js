@@ -7,6 +7,11 @@ const ServiceReservations = require("./serviceReservations.models");
 const Services = require("./services.models");
 const Galleries = require("./galleries.models");
 const GalleryImages = require("./galleryImages.models");
+const RoomIssues = require("./room_issues.models");
+const Chats = require("./chats.models");
+const Messages = require("./messages.models");
+const Notifications = require("./notifications.models");
+const configurations = require("./configurations.models");
 
 const initModels = () => {
     // Relación entre Usuarios y Roles
@@ -29,6 +34,10 @@ const initModels = () => {
     Rooms.hasMany(Reservations, { foreignKey: "roomId" });
     Reservations.belongsTo(Rooms, { foreignKey: "roomId" });
 
+    // Relación entre Habitaciones y problemas
+    Rooms.hasMany(RoomIssues, { foreignKey: "roomId" });
+    RoomIssues.belongsTo(Rooms, { foreignKey: "roomId" });
+
     // Relación entre Pagos y Reservaciones
     Reservations.hasMany(Payments, { foreignKey: "reservationId" });
     Payments.belongsTo(Reservations, { foreignKey: "reservationId" });
@@ -44,6 +53,13 @@ const initModels = () => {
 
     Reservations.belongsTo(Rooms, { foreignKey: "roomId", as: "Room" });
     Rooms.hasMany(Reservations, { foreignKey: "roomId", as: "Reservations" });
+
+    Chats.belongsTo(Users, { as: "user", foreignKey: "userId" });
+    Chats.belongsTo(Users, { as: "agent", foreignKey: "agentId" });
+    Messages.belongsTo(Chats, { foreignKey: "chatId" });
+    Messages.belongsTo(Users, { as: "sender", foreignKey: "senderId" });
+
+    Notifications.belongsTo(Users, { foreignKey: "userId" });
 };
 
 module.exports = initModels;

@@ -23,21 +23,32 @@ const Reservations = db.define("reservations", {
             key: "id",
         },
     },
-    checkInDate: {
+    checkIn: {
         type: DataTypes.DATE,
         allowNull: false,
     },
-    checkOutDate: {
+    checkOut: {
         type: DataTypes.DATE,
         allowNull: false,
     },
     status: {
-        type: DataTypes.STRING,
-        defaultValue: "pending",
+        type: DataTypes.ENUM(
+            "Pending", //Reservation registered but not yet confirmed
+            "Approved", // Reservation confirmed and ready to be used, was paid.
+            "Rejected", //Reservation was not accepted due to unavailability or other reasons.
+            "Cancelled", //Reservation was cancelled by the user or administrator.
+            "Completed", //Reservation has been used (e.g., after the client has checked out).
+            "No show", //The client did not show up to use the reservation. but the client Paids
+            "Expired" //Reservation was not used within the assigned time.
+        ),
+        defaultValue: "Pending",
     },
     totalPrice: {
         type: DataTypes.DECIMAL(10, 2),
         allowNull: false,
+    },
+    voucher: {
+        type: DataTypes.STRING,
     },
 });
 

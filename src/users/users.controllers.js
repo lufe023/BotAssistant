@@ -1,3 +1,4 @@
+//users.controllers.js
 //? Dependencies
 const uuid = require("uuid");
 
@@ -198,6 +199,25 @@ const findUserController = async (findWord) => {
     return data;
 };
 
+const getUsersByRole = async (roleName) => {
+    // Suponiendo que "roleName" es el nombre del rol (en este caso "Administrador")
+    const role = await Roles.findOne({
+        where: { roleName: roleName },
+    });
+
+    if (!role) {
+        return []; // Si no se encuentra el rol, devolvemos un array vacío
+    }
+
+    const users = await Users.findAll({
+        where: {
+            role: role.id, // Suponiendo que el id del rol está guardado en la columna 'role' de Users
+        },
+    });
+
+    return users;
+};
+
 module.exports = {
     createUser,
     getAllUsers,
@@ -210,4 +230,5 @@ module.exports = {
     changeUserRoleController,
     findUserController,
     getUserByPhoneNumber,
+    getUsersByRole,
 };

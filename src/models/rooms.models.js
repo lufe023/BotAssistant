@@ -48,6 +48,64 @@ const Rooms = db.define("rooms", {
         type: DataTypes.STRING,
         defaultValue: "available",
     },
+
+    // Amenidades
+    hotWater: {
+        type: DataTypes.BOOLEAN,
+        defaultValue: false,
+    },
+    wifi: {
+        type: DataTypes.BOOLEAN,
+        defaultValue: true,
+    },
+    airConditioning: {
+        type: DataTypes.BOOLEAN,
+        defaultValue: true,
+    },
+    balcony: {
+        type: DataTypes.BOOLEAN,
+        defaultValue: false,
+    },
+    tv: {
+        type: DataTypes.BOOLEAN,
+        defaultValue: true,
+    },
+    privateBathroom: {
+        type: DataTypes.BOOLEAN,
+        defaultValue: true,
+    },
+    minibar: {
+        type: DataTypes.BOOLEAN,
+        defaultValue: false,
+    },
+    coffeeMaker: {
+        type: DataTypes.BOOLEAN,
+        defaultValue: false,
+    },
+    landscapeView: {
+        type: DataTypes.BOOLEAN,
+        defaultValue: false,
+    },
+    safeBox: {
+        type: DataTypes.BOOLEAN,
+        defaultValue: false,
+    },
+    breakfastIncluded: {
+        type: DataTypes.BOOLEAN,
+        defaultValue: false,
+    },
+    parking: {
+        type: DataTypes.BOOLEAN,
+        defaultValue: true,
+    },
+    poolAccess: {
+        type: DataTypes.BOOLEAN,
+        defaultValue: true,
+    },
+    gymAccess: {
+        type: DataTypes.BOOLEAN,
+        defaultValue: true,
+    },
 });
 
 module.exports = Rooms;

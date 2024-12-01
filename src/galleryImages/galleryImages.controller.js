@@ -3,6 +3,7 @@ const { v4: uuidv4 } = require("uuid");
 const Galleries = require("../models/galleries.models");
 const GalleryImages = require("../models/galleryImages.models");
 const Rooms = require("../models/rooms.models");
+const { deleteImageController } = require("../images/images.controller");
 
 const uploadImages = async (req, res) => {
     try {
@@ -73,4 +74,43 @@ const uploadImages = async (req, res) => {
     }
 };
 
-module.exports = { uploadImages };
+const deleteGalleryImage = async (req, res) => {
+    const { id } = req.params; // ID de la imagen en la base de datos
+
+    try {
+        // Busca la imagen en la base de datos
+        const image = await GalleryImages.findOne({ where: { id } });
+
+        if (!image) {
+            return res.status(404).json({ message: "Imagen no encontrada" });
+        }
+
+        // Obtén el nombre de la imagen desde el imageUrl
+        const imageName = path.basename(image.imageUrl); // Extrae el nombre del archivo
+        const folder = "images"; // Carpeta donde están las imágenes
+
+        // Llama al controlador para eliminar la imagen física
+        const deleteResult = await deleteImageController(folder, imageName);
+
+        if (!deleteResult.success) {
+            return res.status(500).json({
+                message: "Error al eliminar la imagen física",
+                error: deleteResult.message,
+            });
+        }
+
+        // Elimina el registro de la imagen en la base de datos
+        await GalleryImages.destroy({ where: { id } });
+
+        return res
+            .status(200)
+            .json({ message: "Imagen eliminada correctamente" });
+    } catch (error) {
+        console.error(error);
+        return res
+            .status(500)
+            .json({ message: "Error al eliminar la imagen", error });
+    }
+};
+
+module.exports = { uploadImages, deleteGalleryImage };

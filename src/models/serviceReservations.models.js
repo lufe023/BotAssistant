@@ -32,6 +32,10 @@ const ServiceReservations = db.define("service_reservations", {
         type: DataTypes.DECIMAL(10, 2),
         allowNull: false,
     },
+    dispatchedAt: {
+        type: DataTypes.DATE,
+        allowNull: true,
+    },
 });
 
 module.exports = ServiceReservations;
