@@ -76,6 +76,10 @@ const Users = db.define("users", {
         field: "is_verified",
         defaultValue: false,
     },
+    isBotTalking: {
+        type: DataTypes.BOOLEAN,
+        defaultValue: false,
+    },
 });
 
 module.exports = Users;

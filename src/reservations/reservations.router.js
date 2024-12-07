@@ -12,6 +12,7 @@ router.get(
     roleValidate(["Administrator"]),
     reservationsServices.getAllReservations
 );
+
 router.get("/date-range", reservationsServices.getReservationsByDateRange);
 router.get("/available-dates", reservationsServices.getAvailableDates);
 

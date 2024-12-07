@@ -56,6 +56,8 @@ const initModels = () => {
 
     Chats.belongsTo(Users, { as: "user", foreignKey: "userId" });
     Chats.belongsTo(Users, { as: "agent", foreignKey: "agentId" });
+    Chats.hasMany(Messages, { as: "messages", foreignKey: "chatId" });
+
     Messages.belongsTo(Chats, { foreignKey: "chatId" });
     Messages.belongsTo(Users, { as: "sender", foreignKey: "senderId" });
 

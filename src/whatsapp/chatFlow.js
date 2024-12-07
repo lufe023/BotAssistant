@@ -44,34 +44,6 @@ const handleUserMessage = async (message, chatState, phone) => {
     }
 };
 
-// Función para agregar al usuario a la cola y emitir evento de soporte
-const handleHumanSupportRequest = async (message, chatState, phone) => {
-    await message.reply(
-        "Te pondremos en contacto con un representante humano. Por favor, espera un momento."
-    );
-
-    // Agregar al usuario a la cola de atención humana
-    humanSupportQueue.push({
-        phone: phone,
-        chatId: message.id,
-        userName: message.notifyName || "Usuario sin nombre",
-    });
-
-    // // Emitir evento a través de Socket.IO al frontend
-    // if (io) {
-    //     io.emit("new-notification", {
-    //         phone: phone,
-    //         chatId: message.id,
-    //         userName: message.notifyName || "Usuario sin nombre",
-    //     });
-    //     console.log("Evento emitido a través de Socket.IO");
-    // } else {
-    //     console.error("Socket.IO no está disponible.");
-    // }
-
-    waitAgentMessage(message, chatState, phone);
-};
-
 // Función para escuchar los mensajes de los agentes en el frontend
 const waitAgentMessage = async (message, chatState, phone) => {
     if (io) {

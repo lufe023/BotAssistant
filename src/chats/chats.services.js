@@ -1,9 +1,20 @@
 const chatServices = require("./chats.controllers");
 
-// servicios de Chats
+// servicios de mis Chats
+const getAllMyChats = async (req, res) => {
+    const { id } = req.user;
+    try {
+        const chats = await chatServices.getAllMyChats(id);
+        res.status(200).json(chats);
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+};
+
+// servicios de todos Chats
 const getAllChats = async (req, res) => {
     try {
-        const chats = await chatServices.getAllChats();
+        const chats = await chatServices.getAllchats();
         res.status(200).json(chats);
     } catch (error) {
         res.status(500).json({ message: error.message });
@@ -66,16 +77,19 @@ const createMessage = async (req, res) => {
     try {
         const message = await chatServices.createMessage(
             req.params.chatId,
-            req.body
+            req.body,
+            req.user.id
         );
         res.status(201).json(message);
     } catch (error) {
+        console.log(error);
         res.status(500).json({ message: error.message });
     }
 };
 
 module.exports = {
     getAllChats,
+    getAllMyChats,
     getChatById,
     createChat,
     updateChat,

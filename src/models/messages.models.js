@@ -25,10 +25,7 @@ const Messages = db.define("messages", {
             key: "id",
         },
     },
-    senderRole: {
-        type: DataTypes.STRING,
-        allowNull: true, // 'user' o 'agent'
-    },
+
     message: {
         type: DataTypes.TEXT,
         allowNull: false,

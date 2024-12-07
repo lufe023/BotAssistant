@@ -25,10 +25,17 @@ const Chats = db.define("chats", {
             key: "id",
         },
     },
+    // status: {
+    //     type: DataTypes.ENUM,
+    //     allowNull: false,
+    //     defaultValue: "waiting", // "waiting", "in-progress", "completed"
+    // },
     status: {
-        type: DataTypes.STRING,
-        allowNull: false,
-        defaultValue: "waiting", // "waiting", "in-progress", "completed"
+        type: DataTypes.ENUM(
+            "active", // Reservation confirmed and ready to be used, was paid..
+            "completed" //Reservation was cancelled by the user or administrator.
+        ),
+        defaultValue: "active",
     },
     startedAt: {
         type: DataTypes.DATE,

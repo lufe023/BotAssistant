@@ -63,12 +63,13 @@ io.on("connection", (socket) => {
             const userId = decoded.id;
 
             if (userId) {
+                // Actualiza el socket del usuario
                 notificationsControllers.setNotificationsUsers(
                     userId,
                     socket.id
                 );
                 console.log(
-                    `Usuario autenticado: ${userId} y socket socket.id`
+                    `Usuario autenticado: ${userId}, socket: ${socket.id}`
                 );
             }
         } catch (error) {

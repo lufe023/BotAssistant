@@ -1,13 +1,34 @@
 const uuid = require("uuid");
 const Chats = require("../models/chats.models");
 const Messages = require("../models/messages.models");
+const { initializeClient, getClient } = require("../whatsapp/whatsappClient");
 const {
     sendNotification,
 } = require("../notifications/notifications.controllers");
+const { Op } = require("sequelize");
+const Users = require("../models/users.models");
+const { getUserById } = require("../users/users.controllers");
 
 // controladores de Chats
-const getAllChats = async () => {
-    return await Chats.findAll();
+const getAllMyChats = async (id) => {
+    return await Chats.findAll({
+        where: {
+            [Op.or]: [{ userId: id }, { agentId: id }],
+        },
+    });
+};
+
+// controladores de Chats
+const getAllchats = async () => {
+    const chats = await Chats.findAll({
+        where: { status: "active" },
+        include: [
+            { model: Users, as: "user" },
+            { model: Messages, as: "messages" },
+        ],
+    });
+
+    return chats;
 };
 
 const getChatById = async (id) => {
@@ -48,8 +69,7 @@ const createMessage = async (chatId, data, senderId) => {
     if (!data.receiverId) {
         throw new Error('El campo "receiverId" es obligatorio');
     }
-
-    return await Messages.create({
+    const messageCreate = await Messages.create({
         id: uuid.v4(),
         chatId,
         senderId, // Lo obtenemos del token
@@ -57,6 +77,32 @@ const createMessage = async (chatId, data, senderId) => {
         message: data.message,
         sentAt: new Date(),
     });
+
+    const getUserPhone = await getUserById(data.receiverId);
+
+    await sentToWhatsapp(getUserPhone.phone, data.message);
+
+    return messageCreate;
+};
+
+const createMessageToAgent = async (chatId, data, senderId) => {
+    if (!data.message) {
+        throw new Error('El campo "message" es obligatorio');
+    }
+
+    if (!data.receiverId) {
+        throw new Error('El campo "receiverId" es obligatorio');
+    }
+    const messageCreate = await Messages.create({
+        id: uuid.v4(),
+        chatId,
+        senderId, // Lo obtenemos del token
+        receiverId: data.receiverId, // A quién va dirigido el mensaje
+        message: data.message,
+        sentAt: new Date(),
+    });
+
+    return messageCreate;
 };
 
 const createChatWithMessage = async (chatData, initialMessageData) => {
@@ -106,8 +152,16 @@ const createChatWithNotification = async (userId, initialMessage) => {
     return chat;
 };
 
+const sentToWhatsapp = async (chatId, message) => {
+    let number = `${chatId}@c.us`;
+
+    const client = getClient(); // Obtén el cliente de WhatsApp
+    await client.sendMessage(number, message);
+};
+
 module.exports = {
-    getAllChats,
+    getAllchats,
+    getAllMyChats,
     getChatById,
     createChat,
     updateChat,

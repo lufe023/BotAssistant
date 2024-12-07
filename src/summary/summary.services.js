@@ -35,7 +35,7 @@ const getAllRooms = (req, res) => {
 
 const getRoomStatusSummary = (req, res) => {
     const ubication = req.query.ubication || "";
-    console.log(ubication);
+
     summaryControllers
         .getRoomStatusSummary(ubication)
         .then((data) => {

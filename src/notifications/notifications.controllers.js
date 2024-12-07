@@ -2,6 +2,7 @@
 const Notifications = require("../models/notifications.models");
 const uuid = require("uuid");
 // Configurar la instancia de io
+
 const setIoInstance = (socketIoInstance) => {
     io = socketIoInstance;
 };
@@ -107,15 +108,19 @@ const deleteNotification = async (id) => {
 };
 
 const sendNotification = (userId, type, data = {}) => {
-    const io = getSocketIoInstance();
-    const connectedUsers = getConnectedUsers();
     const socketId = connectedUsers.get(userId);
 
     if (socketId) {
-        io.to(socketId).emit("new-notification", { type, ...data });
-        console.log(`Notificación enviada a Usuario ${userId}`);
+        io.to(socketId).emit("new-notification", {
+            title: data.title,
+            message: data.message,
+            type: type,
+        });
+        console.log(
+            `Notificación enviada a Usuario ${userId} en el socket ${socketId}`
+        );
     } else {
-        console.log(`Usuario ${userId} no está conectado`);
+        console.log(`Usuario ${userId} no está conectado ahora`);
     }
 };
 

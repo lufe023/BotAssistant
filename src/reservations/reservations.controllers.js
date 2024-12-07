@@ -59,16 +59,16 @@ const createReservation = async (reservationData) => {
     }
 
     // Crear fechas con las horas de configuración
-    const finalCheckIn = `${startDateStr}T${config.defaultCheckInTime}`;
-    const finalCheckOut = `${endDateStr}T${config.defaultCheckOutTime}`;
+    const finalCheckIn = `${startDateStr} ${config.defaultCheckInTime}`;
+    const finalCheckOut = `${endDateStr} ${config.defaultCheckOutTime}`;
 
     console.log("Fechas generadas: ", finalCheckIn, finalCheckOut);
 
     // Verificar disponibilidad y calcular precio
     const { isAvailable, totalPrice } = await calculateAvailabilityAndCost(
         roomId,
-        finalCheckIn,
-        finalCheckOut
+        startDate,
+        endDate
     );
 
     if (!isAvailable) {
@@ -170,9 +170,9 @@ const getAvailableDates = async (startDate, endDate) => {
 
         // Ajustar fechas con horas predeterminadas
         const adjustedStartDate = new Date(
-            `${startDate}T${defaultCheckInTime}`
+            `${startDate} ${defaultCheckInTime}`
         );
-        const adjustedEndDate = new Date(`${endDate}T${defaultCheckOutTime}`);
+        const adjustedEndDate = new Date(`${endDate} ${defaultCheckOutTime}`);
 
         // Obtener reservas dentro del rango de fechas
         const reservations = await Reservations.findAll({

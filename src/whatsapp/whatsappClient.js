@@ -5,125 +5,31 @@ const fs = require("fs-extra");
 const moment = require("moment");
 const uuid = require("uuid");
 const User = require("../models/users.models");
-const Zmoment = require("moment-timezone");
-require("moment/locale/es");
-Zmoment.locale("es");
+const {
+    formatAvailability,
+    parseDate,
+    handleCreateChatWitMessage,
+} = require("./agentUtils");
 const { deleteQrImage } = require("../images/images.controller");
 const {
     getUserByPhoneNumber,
-    createUser,
+    updateUser,
 } = require("../users/users.controllers");
 const {
     getAvailableDates,
     createReservation,
 } = require("../reservations/reservations.controllers");
-const { handleUserMessage, waitAgentMessage } = require("./chatFlow");
-
-function formatAvailability(response, checkInDate, checkOutDate) {
-    const availabilityDetails = [];
-
-    // Establecer el idioma en español
-    Zmoment.locale("es");
-
-    // Convertir las fechas de entrada y salida a Date en la zona horaria de Santo Domingo
-    const checkIn = Zmoment.tz(checkInDate, "America/Santo_Domingo")
-        .startOf("day")
-        .toDate();
-
-    // Aseguramos que la salida sea la mañana del 1 de diciembre
-    const checkOut = Zmoment.tz(checkOutDate, "America/Santo_Domingo")
-        .startOf("day") // Ajustamos para que sea al inicio del día, es decir, la mañana del 1 de diciembre
-        .toDate();
-
-    // Función para formatear una fecha en español en la zona horaria de Santo Domingo
-    const formatDate = (dateString) => {
-        return Zmoment.tz(dateString, "America/Santo_Domingo").format(
-            "D [de] MMMM [de] YYYY"
-        );
-    };
-
-    // Función para obtener intervalos de fechas consecutivas
-    const getDateRanges = (dates) => {
-        const ranges = [];
-        let start = dates[0];
-
-        for (let i = 1; i < dates.length; i++) {
-            const currentDate = new Date(dates[i]);
-            const previousDate = new Date(dates[i - 1]);
-
-            // Si la fecha actual no es el día siguiente de la anterior, finaliza el rango actual
-            if ((currentDate - previousDate) / (1000 * 60 * 60 * 24) !== 1) {
-                ranges.push({ start, end: dates[i - 1] });
-                start = dates[i];
-            }
-        }
-        // Agrega el último rango
-        ranges.push({ start, end: dates[dates.length - 1] });
-
-        return ranges;
-    };
-
-    // Obtener las habitaciones disponibles
-    const availableRooms = response.map((room) => [
-        room.type,
-        room.roomNumber,
-        room.roomId,
-    ]);
-    const chatState = {
-        availableRooms: availableRooms,
-    };
-    console.log(chatState.availableRooms);
-
-    // Recorrer la respuesta de habitaciones
-    response.forEach((room) => {
-        const { type, pricePerNight, availableDates } = room;
-
-        // Filtrar las fechas disponibles que están dentro del rango solicitado
-        const filteredAvailableDates = availableDates.filter((date) => {
-            const currentDate = Zmoment.tz(
-                date,
-                "America/Santo_Domingo"
-            ).toDate();
-            return currentDate >= checkIn && currentDate <= checkOut;
-        });
-
-        // Obtener los intervalos de fechas consecutivas
-        const dateRanges = getDateRanges(filteredAvailableDates);
-
-        // Formatear los intervalos en texto
-        const availablePeriods = dateRanges.map((range) => {
-            // Sumar un día a la fecha de salida para indicar la mañana del día siguiente
-            const nextDay = new Date(range.end);
-            nextDay.setDate(nextDay.getDate() + 1); // Sumamos 1 día
-
-            return `desde ${formatDate(
-                range.start
-            )} hasta la mañana del ${formatDate(checkOutDate)}`;
-        });
-
-        // Unir los periodos en un string
-        const availableText = availablePeriods.join(" y ");
-
-        // Formato final para el cliente
-        availabilityDetails.push(
-            `Tipo de habitación: *${type}* \nPrecio por noche: $${pricePerNight}\nFechas disponibles: ${availableText}`
-        );
-    });
-
-    // Información general (ajustado para mostrar la salida en la mañana del 1 de diciembre)
-    return (
-        `Esta es nuestra disponibilidad:\nEntrada: ${formatDate(
-            checkInDate
-        )}\nSalida: la mañana del ${formatDate(checkOutDate)}\n\n` +
-        availabilityDetails.join("\n\n")
-    );
-}
+const { handleUserMessage } = require("./chatFlow");
 
 const Menu =
     "1️⃣ Consultar Disponibilidad.\n" +
     "2️⃣ Hacer Reservación.\n" +
-    "3️⃣ Chatear con un Humano.";
+    "3️⃣ Chatear con un Agente humano.";
 // Función para reiniciar el cliente de WhatsApp en caso de error
+
+let clientInstance;
+let isClientReady = false;
+
 const initializeClient = () => {
     const client = new Client({
         authStrategy: new LocalAuth(),
@@ -157,17 +63,20 @@ const initializeClient = () => {
 
     client.on("ready", () => {
         console.log("Client is ready!");
+        isClientReady = true;
         deleteQrImage("../whatsapp/qr", "qr.png");
     });
 
     client.on("auth_failure", (msg) => {
         console.error("Falló la autenticación: ", msg);
         initializeClient();
+        isClientReady = false;
     });
 
     client.on("disconnected", (reason) => {
         console.error("Cliente desconectado:", reason);
         initializeClient();
+        isClientReady = false;
     });
 
     const chatStates = {};
@@ -177,7 +86,7 @@ const initializeClient = () => {
             const chatId = message.from;
             const phone = chatId.split("@")[0]; // Extrae el número de teléfono
             const msgText = message.body.trim();
-
+            const user = await getUserByPhoneNumber(phone);
             // Inicializar el estado del chat si no existe
             if (!chatStates[chatId]) {
                 chatStates[chatId] = { stage: 0, greeted: false, userData: {} };
@@ -190,32 +99,77 @@ const initializeClient = () => {
                 !chatState.greeted &&
                 !chatState.talkToAgent
             ) {
-                const user = await getUserByPhoneNumber(phone);
                 if (user) {
                     chatState.userData.id = user.id;
-                    await message.reply(
-                        `¡Hola ${user.firstName}! Bienvenido de nuevo. ¿En qué puedo ayudarte hoy?\n\n` +
-                            Menu
-                    );
-                } else {
+
+                    if (user.isBotTalking === true) {
+                        chatState.talkToAgent = true;
+                        chatState.stage = 3.1;
+                        chatState.greeted = true;
+
+                        // Informar al cliente que será conectado con un agente
+                        await message.reply(
+                            "En este momento, te pondremos en contacto con uno de nuestros agentes. Por favor, espera un momento. 🙋‍♂️"
+                        );
+                    } else {
+                        await message.reply(
+                            `¡Hola ${user.firstName}! Bienvenido de nuevo. ¿En qué puedo ayudarte hoy?\n\n` +
+                                Menu
+                        );
+                        chatState.stage = 1;
+                    }
+                }
+                if (!user) {
                     await message.reply(
                         "¡Hola! Soy el bot Asistente del Hotel y Restaurant Las Marias. 🤖 ¿En qué puedo ayudarte hoy?\n\n" +
                             Menu
                     );
+                    chatState.stage = 1;
                 }
+
                 chatState.greeted = true;
-                chatState.stage = 1;
+
                 return;
-            } else if (
-                chatState.greeted == true &&
-                chatState.talkToAgent == true
-            ) {
-                //esto es solo un ejemplo de lo que vamos a ir haciendo
-                message.reply("En unos minutos le responderemos");
-                console.log(
-                    "llegamos a la opcion donde el usuario quiere hablar"
-                );
             }
+
+            // // Manejo de la opción 3
+            // if (msgText === "3") {
+            //     const user = await getUserByPhoneNumber(phone);
+
+            //     if (user) {
+            //         // Actualiza el estado en la base de datos y en el chat
+            //         await updateUser(user.id, { isBotTalking: true });
+            //         chatState.stage = 3.1;
+            //         chatState.talkToAgent = true;
+            //         chatState.userData.id = user.id;
+
+            //         // Notifica al cliente
+            //         await message.reply(
+            //             `¡Bien! ${user.firstName}, en breve uno de nuestros agentes le atenderá.`
+            //         );
+
+            //         // Registra el mensaje inicial en la conversación
+            //         const chat = await handleCreateChatWitMessage(
+            //             { userId: user.id, agentId: null },
+            //             {
+            //                 senderId: user.id,
+            //                 content: "Quiero hablar con un representante",
+            //                 message: "Quiero hablar con un representante",
+            //             }
+            //         );
+
+            //         chatState.chat = chat;
+            //         await handleUserMessage(message, chatState, phone);
+            //     } else {
+            //         // Caso en el que el usuario no está registrado
+            //         chatState.stage = 3; // Espera el nombre
+            //         await message.reply(
+            //             "🤝🏻 De acuerdo, por favor indíqueme su nombre para ponerle en contacto con un agente."
+            //         );
+            //     }
+
+            //     return; // Finaliza aquí para evitar más procesamiento
+            // }
 
             switch (chatState.stage) {
                 case 1: // Menú de opciones
@@ -242,17 +196,17 @@ const initializeClient = () => {
                     } else if (msgText === "3") {
                         const user = await getUserByPhoneNumber(phone);
                         if (user) {
-                            chatState.stage = 0;
-                            chatState.greeted = true;
+                            await message.reply(
+                                `bien! ${user.firstName}, en breve uno de nuestros agentes le atenderá.`
+                            );
+                            chatState.stage = 3.1;
                             chatState.talkToAgent = true;
                             chatState.userData.id = user.id;
-
-                            await message.reply(
-                                `Excelente! ${user.firstName}, en breve uno de nuestros agentes le atenderá.`
-                            );
+                            await updateUser(user.id, { isBotTalking: true });
 
                             await handleUserMessage(message, chatState, phone);
-                            await createChatWithMessage(
+
+                            const chat = handleCreateChatWitMessage(
                                 { userId: user.id, agentId: null },
                                 {
                                     senderId: user.id,
@@ -262,35 +216,15 @@ const initializeClient = () => {
                                         "Quiero hablar con un representante",
                                 }
                             );
+
+                            chatState.chat = chat;
                         } else {
                             await message.reply(
-                                "bien, indiqueme su nombre y de inmediato un agente nuestro le atenderá"
+                                "🤝🏻 de acuerdo, indiqueme su nombre y de inmediato un agente nuestro le atenderá"
                             );
+
+                            chatState.stage = 3;
                             //esperando que el usuario responda
-
-                            chatState.userData.fullName = msgText;
-
-                            if (chatState.userData.fullName) {
-                                await message.reply(
-                                    "¿Confirma que este es su nombre correcto? responda con un Si, o con el nombre correcto"
-                                );
-                            } else if (msgText.toLocaleLowerCase == "si") {
-                                // Registrar al usuario
-                                const createUser = await User.create({
-                                    id: uuid.v4(),
-                                    phone: phone,
-                                    firstName: chatState.userData.fullName,
-                                    lastName: "",
-                                    picture: "",
-                                    status: "active", // Establecer el estado del nuevo usuario a 'active'
-                                    active: true,
-                                    role: 1,
-                                });
-                                chatState.userData.id = createUser.id;
-                                chatState.userData.isRegistered = true;
-                            } else {
-                                chatState.userData.fullName = msgText;
-                            }
                         }
 
                         // await handleUserMessage(message, chatState, phone);
@@ -350,7 +284,118 @@ const initializeClient = () => {
                     handleGetImage(msgText, message, chatState);
                     break;
                 case 3:
-                    console.log("Stage 3");
+                    console.log("pidio hablar");
+                    // Si no hay un nombre guardado previamente, guardar el nombre actual
+                    if (!chatState.userData.fullName) {
+                        chatState.userData.fullName = msgText;
+                        await message.reply(
+                            "¿Confirma que este es su nombre correcto? Responda con *Si*, o escriba el nombre correcto nuevamente."
+                        );
+                        break;
+                    }
+
+                    // Verificar si el mensaje es una confirmación
+                    if (msgText.toLowerCase() === "si") {
+                        // Registrar al usuario con el nombre confirmado
+                        const createUser = await User.create({
+                            id: uuid.v4(),
+                            phone: phone,
+                            firstName: chatState.userData.fullName,
+                            lastName: "",
+                            picture: "",
+                            status: "active", // Establecer el estado del nuevo usuario a 'active'
+                            active: true,
+                            role: 1,
+                            isBotTalking: true,
+                        });
+
+                        chatState.userData.id = createUser.id;
+                        chatState.userData.isRegistered = true;
+                        chatState.greeted = true;
+                        chatState.talkToAgent = true;
+                        chatState.stage = 3.1;
+
+                        await message.reply(
+                            `¡Bien! ${createUser.firstName}, en breve uno de nuestros agentes le atenderá.`
+                        );
+
+                        await handleUserMessage(message, chatState, phone);
+
+                        let chatData = { userId: createUser.id, agentId: null };
+                        let initialMessageData = {
+                            senderId: createUser.id,
+                            content: "Quiero hablar con un representante",
+                            message: "Quiero hablar con un representante",
+                        };
+
+                        const chat = await handleCreateChatWitMessage(
+                            chatData,
+                            initialMessageData
+                        );
+                        chatState.chat = chat;
+                    } else {
+                        // Si no es una confirmación, asumir que el usuario ingresó un nuevo nombre
+                        chatState.userData.fullName = msgText;
+                        await message.reply(
+                            "¿Confirma que este es su nombre correcto? Responda con *Si*, o escriba el nombre correcto nuevamente."
+                        );
+                        chatState.stage = 3; // Mantener el mismo estado para volver a validar
+                    }
+                    break;
+                case 3.1:
+                    try {
+                        const user = await getUserByPhoneNumber(phone);
+
+                        if (!user.isBotTalking) {
+                            // Reiniciar el estado del bot
+                            chatState.stage = 0;
+                            chatState.talkToAgent = false;
+                            chatState.greeted = false;
+
+                            // Informar al cliente de que puede continuar con el bot
+                            await message.reply(
+                                "¡Hola de nuevo! 😊\n" +
+                                    "Soy tu asistente virtual. Espero que nuestro agente haya podido resolver todas tus dudas de manera satisfactoria. Si necesitas algo más, no dudes en decírmelo. ¡Estoy aquí para ayudarte! 💬 \n\n" +
+                                    "Por favor selecciona una opción del menú:\n\n" +
+                                    Menu
+                            );
+                        } else {
+                            console.log(
+                                "El agente sigue hablando con el cliente."
+                            );
+
+                            let chatData = {
+                                userId: user.id,
+                                agentId:
+                                    chatState.chat?.chat?.dataValues?.agentId ||
+                                    null,
+                            };
+                            let initialMessageData = {
+                                senderId: user.id,
+                                content: msgText,
+                                message: msgText,
+                            };
+
+                            const chat = await handleCreateChatWitMessage(
+                                chatData,
+                                initialMessageData
+                            );
+                            chatState.chat = chat;
+                            //console.log(chatState.chat.chat.dataValues);
+                            if (chatState.chat.chat.dataValues.agentId) {
+                                await sendNotification(
+                                    chatState.chat.chat.dataValues.agentId,
+                                    "new_message",
+                                    { chat: chatState.chat, msgText }
+                                );
+                            }
+                        }
+                    } catch (error) {
+                        console.error(
+                            "Error al verificar el estado de isBotTalking:",
+                            error
+                        );
+                    }
                     break;
             }
         } catch (error) {
@@ -359,73 +404,17 @@ const initializeClient = () => {
     });
 
     client.initialize();
+    clientInstance = client;
 };
 
 // Llamar a la función para iniciar el cliente
 initializeClient();
 
-const months = require("./monthName.json");
 const Reservations = require("../models/reservations.models");
 const {
     sendNotification,
 } = require("../notifications/notifications.controllers");
-const { createChatWithMessage } = require("../chats/chats.controllers");
-
-const parseDate = (inputDate) => {
-    // Normalizar la fecha reemplazando separadores por espacios y pasándola a minúsculas
-    const normalizedDate = inputDate
-        .trim()
-        .toLowerCase()
-        .replace(/[ - . , _ / ]/g, " ");
-    let parsedDate;
-
-    // Formato "01 noviembre 24" o "1 nov 2024"
-    const monthNameMatch = normalizedDate.match(
-        /^(\d{1,2})\s+([a-záéíóúñ]+)\s+(\d{2}|\d{4})$/
-    );
-
-    if (monthNameMatch) {
-        const day = monthNameMatch[1].padStart(2, "0");
-        const monthName = monthNameMatch[2];
-        let month;
-
-        // Buscar el mes en las variaciones
-        for (const [monthNumber, monthInfo] of Object.entries(months)) {
-            if (monthInfo.variations.includes(monthName)) {
-                month = monthNumber; // Obtener el número del mes
-                break;
-            }
-        }
-
-        if (!month) {
-            return null; // Si el mes no es válido, retornar null
-        }
-
-        const year =
-            monthNameMatch[3].length === 2
-                ? `20${monthNameMatch[3]}`
-                : monthNameMatch[3];
-        parsedDate = moment(`${year}-${month}-${day}`, "YYYY-MM-DD");
-    }
-    // Formatos "dd/mm/yyyy" o "dd-mm-yy", admite varios separadores
-    else if (/^\d{1,2}[ \/.\-_]\d{1,2}[ \/.\-_]\d{2,4}$/.test(normalizedDate)) {
-        const [day, month, year] = normalizedDate
-            .split(/[ \/.\-_]/)
-            .map((num) => num.padStart(2, "0"));
-        const fullYear = year.length === 2 ? `20${year}` : year;
-        parsedDate = moment(`${fullYear}-${month}-${day}`, "YYYY-MM-DD");
-    }
-    // Formato "ddmmyyyy" o "ddmmyy" (todo junto)
-    else if (/^\d{6,8}$/.test(normalizedDate)) {
-        const day = normalizedDate.slice(0, 2);
-        const month = normalizedDate.slice(2, 4);
-        const year = normalizedDate.slice(4);
-        const fullYear = year.length === 2 ? `20${year}` : year;
-        parsedDate = moment(`${fullYear}-${month}-${day}`, "YYYY-MM-DD");
-    }
-
-    return parsedDate && parsedDate.isValid() ? parsedDate : null;
-};
+const { type } = require("os");
 
 const handleDisponibilidad = async (msgText, message, chatState) => {
     // Validar la fecha de entrada
@@ -556,7 +545,7 @@ const handleDoReservation = async (msgText, message, chatState) => {
 
     chatState.selectedRoom = selectedRoom;
 
-    const response = `Usted seleccionó: Habitación ${selectedRoom.type} con un costo de ${selectedRoom.pricePerNight}. \n escriba si, si esta de acuerdo con la seleccion o no para devolver el proceso`;
+    const response = `Usted seleccionó: Habitación ${selectedRoom.type} con un costo de ${selectedRoom.pricePerNight}. \n escriba *si*, si esta de acuerdo con la seleccion o *no* para seleccionar otra opción`;
 
     await message.reply(response);
     chatState.stage = 2.4;
@@ -565,8 +554,6 @@ const handleDoReservation = async (msgText, message, chatState) => {
 const handleConfirmReservation = async (msgText, message, chatState) => {
     const confirmation = msgText.toLowerCase();
     if (confirmation === "si") {
-        console.log("El estado está en: " + JSON.stringify(chatState));
-
         let reservationData = {
             roomId: chatState.selectedRoom.roomId,
             userId: chatState.userData.id,
@@ -612,11 +599,18 @@ const handleConfirmReservation = async (msgText, message, chatState) => {
             );
         }
     } else {
-        await message.reply(
-            "¡Hola! Soy el bot Asistente del Hotel y Restaurant Las Marias. 🤖 ¿En qué puedo ayudarte hoy?\n\n" +
-                Menu
-        );
-        chatState.stage = 1;
+        const roomOptions = chatState.roomOptions
+            .map((room, index) => {
+                return `${index + 1}. ${room.type} - $${
+                    room.pricePerNight
+                } por noche`;
+            })
+            .join("\n");
+
+        await message.reply("elija una de estas opciones?\n\n" + roomOptions);
+
+        //se nececita cambiar este estado
+        chatState.stage = 2.3;
         chatState.greeted = true;
     }
 };
@@ -682,10 +676,26 @@ const handleGetImage = async (msgText, message, chatState) => {
             "¡Comprobante de pago recibido y cargado exitosamente! Nuestros agentes revisarán tu comprobante y te confirmarán la reservación en breve. 😊"
         );
         chatState.stage = 0;
+        chatState.greeted = null;
     } catch (error) {
         console.error("Error al manejar el archivo:", error);
         await message.reply(
             "Ocurrió un error al procesar el archivo. Intenta nuevamente."
         );
     }
+};
+
+const getClient = () => {
+    if (!clientInstance) {
+        throw new Error("El cliente de WhatsApp no está inicializado.");
+    }
+    if (!isClientReady) {
+        throw new Error("El cliente de WhatsApp no está listo.");
+    }
+    return clientInstance;
+};
+
+module.exports = {
+    initializeClient,
+    getClient,
 };
