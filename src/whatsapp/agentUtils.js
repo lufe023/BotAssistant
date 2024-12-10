@@ -173,7 +173,7 @@ const handleCreateChatWitMessage = async (chatData, initialMessageData) => {
         if (chat) {
             // Si existe un chat y su estado es "completed", actualizar a "active"
             if (chat.status === "completed") {
-                await chat.update({ status: "active" });
+                await chat.update({ status: "active", agentId: null });
             }
         } else {
             // Si no existe un chat, crear uno nuevo

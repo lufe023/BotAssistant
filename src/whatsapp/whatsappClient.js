@@ -85,6 +85,7 @@ const initializeClient = () => {
         try {
             const chatId = message.from;
             const phone = chatId.split("@")[0]; // Extrae el número de teléfono
+            const whatsappNuber = message.from;
             const msgText = message.body.trim();
             const user = await getUserByPhoneNumber(phone);
             // Inicializar el estado del chat si no existe
@@ -132,45 +133,6 @@ const initializeClient = () => {
                 return;
             }
 
-            // // Manejo de la opción 3
-            // if (msgText === "3") {
-            //     const user = await getUserByPhoneNumber(phone);
-
-            //     if (user) {
-            //         // Actualiza el estado en la base de datos y en el chat
-            //         await updateUser(user.id, { isBotTalking: true });
-            //         chatState.stage = 3.1;
-            //         chatState.talkToAgent = true;
-            //         chatState.userData.id = user.id;
-
-            //         // Notifica al cliente
-            //         await message.reply(
-            //             `¡Bien! ${user.firstName}, en breve uno de nuestros agentes le atenderá.`
-            //         );
-
-            //         // Registra el mensaje inicial en la conversación
-            //         const chat = await handleCreateChatWitMessage(
-            //             { userId: user.id, agentId: null },
-            //             {
-            //                 senderId: user.id,
-            //                 content: "Quiero hablar con un representante",
-            //                 message: "Quiero hablar con un representante",
-            //             }
-            //         );
-
-            //         chatState.chat = chat;
-            //         await handleUserMessage(message, chatState, phone);
-            //     } else {
-            //         // Caso en el que el usuario no está registrado
-            //         chatState.stage = 3; // Espera el nombre
-            //         await message.reply(
-            //             "🤝🏻 De acuerdo, por favor indíqueme su nombre para ponerle en contacto con un agente."
-            //         );
-            //     }
-
-            //     return; // Finaliza aquí para evitar más procesamiento
-            // }
-
             switch (chatState.stage) {
                 case 1: // Menú de opciones
                     if (msgText === "1") {
@@ -204,23 +166,27 @@ const initializeClient = () => {
                             chatState.userData.id = user.id;
                             await updateUser(user.id, { isBotTalking: true });
 
-                            await handleUserMessage(message, chatState, phone);
+                            let chatData = {
+                                userId: user.id,
+                                agentId: null,
+                            };
 
-                            const chat = handleCreateChatWitMessage(
-                                { userId: user.id, agentId: null },
-                                {
-                                    senderId: user.id,
-                                    content:
-                                        "Quiero hablar con un representante",
-                                    message:
-                                        "Quiero hablar con un representante",
-                                }
+                            let initialMessageData = {
+                                senderId: user.id,
+                                content: "Quiero hablar con un representante",
+                                message: "Quiero hablar con un representante",
+                            };
+
+                            const chat = await handleCreateChatWitMessage(
+                                chatData,
+                                initialMessageData
                             );
-
                             chatState.chat = chat;
+
+                            await handleUserMessage(message, chatState, phone);
                         } else {
                             await message.reply(
-                                "🤝🏻 de acuerdo, indiqueme su nombre y de inmediato un agente nuestro le atenderá"
+                                "🤝🏻 de acuerdo, indiqueme su *nombre* y de inmediato un agente nuestro le atenderá"
                             );
 
                             chatState.stage = 3;
@@ -229,10 +195,12 @@ const initializeClient = () => {
 
                         // await handleUserMessage(message, chatState, phone);
                     } else {
-                        await message.reply(
-                            "Opción no válida. Por favor, elige un número de la lista:\n\n" +
-                                Menu
-                        );
+                        if (chatState.greeted === true) {
+                            await message.reply(
+                                "Opción no válida. Por favor, elige un número de la lista:\n\n" +
+                                    Menu
+                            );
+                        }
                     }
                     break;
 
@@ -284,7 +252,6 @@ const initializeClient = () => {
                     handleGetImage(msgText, message, chatState);
                     break;
                 case 3:
-                    console.log("pidio hablar");
                     // Si no hay un nombre guardado previamente, guardar el nombre actual
                     if (!chatState.userData.fullName) {
                         chatState.userData.fullName = msgText;
@@ -318,21 +285,21 @@ const initializeClient = () => {
                         await message.reply(
                             `¡Bien! ${createUser.firstName}, en breve uno de nuestros agentes le atenderá.`
                         );
-
-                        await handleUserMessage(message, chatState, phone);
-
                         let chatData = { userId: createUser.id, agentId: null };
-                        let initialMessageData = {
-                            senderId: createUser.id,
-                            content: "Quiero hablar con un representante",
-                            message: "Quiero hablar con un representante",
-                        };
 
                         const chat = await handleCreateChatWitMessage(
                             chatData,
                             initialMessageData
                         );
                         chatState.chat = chat;
+
+                        await handleUserMessage(message, chatState, phone);
+
+                        let initialMessageData = {
+                            senderId: createUser.id,
+                            content: "Quiero hablar con un representante",
+                            message: "Quiero hablar con un representante",
+                        };
                     } else {
                         // Si no es una confirmación, asumir que el usuario ingresó un nuevo nombre
                         chatState.userData.fullName = msgText;
@@ -348,7 +315,7 @@ const initializeClient = () => {
 
                         if (!user.isBotTalking) {
                             // Reiniciar el estado del bot
-                            chatState.stage = 0;
+                            chatState.stage = 1;
                             chatState.talkToAgent = false;
                             chatState.greeted = false;
 

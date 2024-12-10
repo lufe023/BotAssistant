@@ -24,7 +24,7 @@ const handleUserMessage = async (message, chatState, phone) => {
         await createNotification({
             title: "notificación de prueba",
             message: message, // Usamos el mensaje recibido
-            content: `${phone} pide hablar con un representante`, // Asumiendo que el tipo de la notificación es "new_message"
+            content: JSON.stringify(chatState), // Asumiendo que el tipo de la notificación es "new_message"
             type: "user_request_agent",
             status: "unread", // Asumimos que el estado de la notificación es "unread"
             userId: user.id, // Asignamos el ID del usuario al que va dirigida la notificación
@@ -32,16 +32,16 @@ const handleUserMessage = async (message, chatState, phone) => {
     }
 
     // Emitir evento a través de Socket.IO al frontend
-    if (io) {
-        io.emit("new-notification", {
-            phone: phone,
-            chatId: message.id,
-            userName: message.notifyName || "Usuario sin nombre",
-        });
-        console.log("Evento emitido a través de Socket.IO");
-    } else {
-        console.error("Socket.IO no está disponible.");
-    }
+    // if (io) {
+    //     io.emit("new-notification", {
+    //         phone: phone,
+    //         chatId: message.id,
+    //         userName: message.notifyName || "Usuario sin nombre",
+    //     });
+    //     console.log("Evento emitido a través de Socket.IO");
+    // } else {
+    //     console.error("Socket.IO no está disponible.");
+    // }
 };
 
 // Función para escuchar los mensajes de los agentes en el frontend

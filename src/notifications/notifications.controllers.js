@@ -8,11 +8,37 @@ const setIoInstance = (socketIoInstance) => {
 };
 
 // notifications.controller.js
-let connectedUsers = new Map(); // Mapa de usuarios conectados
+const connectedUsers = new Map(); // userId -> Set(socketId)
 
 const setNotificationsUsers = (userId, socketId) => {
-    connectedUsers.set(userId, socketId); // Asociar userId con socketId
-    console.log("Usuarios conectados:", Array.from(connectedUsers.entries()));
+    if (!userId || !socketId) {
+        console.warn(
+            "No se puede establecer el socket: faltan userId o socketId."
+        );
+        return;
+    }
+
+    if (!connectedUsers.has(userId)) {
+        connectedUsers.set(userId, new Set());
+    }
+    connectedUsers.get(userId).add(socketId);
+    console.log(`Socket del usuario ${userId} añadido: ${socketId}`);
+};
+
+const removeNotificationSocket = (userId, socketId) => {
+    if (connectedUsers.has(userId)) {
+        const sockets = connectedUsers.get(userId);
+        sockets.delete(socketId);
+
+        if (sockets.size === 0) {
+            connectedUsers.delete(userId); // Elimina el usuario si no quedan sockets
+            console.log(
+                `Todos los sockets del usuario ${userId} han sido eliminados`
+            );
+        } else {
+            console.log(`Socket ${socketId} eliminado del usuario ${userId}`);
+        }
+    }
 };
 
 const { getConnectedUsers } = require("../utils/socketManager");
@@ -57,27 +83,13 @@ const createNotification = async (notificationData) => {
         status: notificationData.status,
         createdAt: notificationData.createdAt || new Date(),
         userId: notificationData.userId,
+        content: notificationData.content,
     });
-    console.log("Los usuarios conectados son: " + connectedUsers);
-    // Obtener el socketId del usuario específico
-    //const socketId = connectedUsers.get(notificationData.destination.userId);
-    if (io) {
-        io.emit("new-notification", {
-            title: notificationData.title,
-            message: notificationData.message,
-            type: notificationData.type,
-        });
-        console.log(
-            `Notificación enviada a Usuario ${notificationData.userId}`
-        );
-    } else {
-        console.error(
-            `Usuario ${notificationData.userId} no está conectado o Socket.IO no está disponible.`
-        );
-    }
 
-    // if (io && socketId) {
-    //     io.to(socketId).emit("new-notification", {
+    // console.log("Los usuarios conectados son: " + connectedUsers);
+    // Obtener el socketId del usuario específico
+    // if (io) {
+    //     io.emit("new-notification", {
     //         title: notificationData.title,
     //         message: notificationData.message,
     //         type: notificationData.type,
@@ -90,6 +102,44 @@ const createNotification = async (notificationData) => {
     //         `Usuario ${notificationData.userId} no está conectado o Socket.IO no está disponible.`
     //     );
     // }
+    // console.log(socketId);
+    // if (io && socketId) {
+    //     io.to(socketId).emit("new-notification", {
+    //         title: notificationData.title,
+    //         message: notificationData.message,
+    //         type: notificationData.type,
+    //         status: notificationData.status,
+    //         createdAt: notificationData.createdAt || new Date(),
+    //         userId: notificationData.userId,
+    //         content: notificationData.content,
+    //     });
+    //     console.log(
+    //         `Notificación enviada a Usuario ${notificationData.userId} al socket ${socketId}`
+    //     );
+    // }
+
+    const sockets = connectedUsers.get(notificationData.userId);
+
+    if (sockets && sockets.size > 0) {
+        sockets.forEach((socketId) => {
+            io.to(socketId).emit("new-notification", {
+                title: notificationData.title,
+                message: notificationData.message,
+                type: notificationData.type,
+                status: notificationData.status,
+                createdAt: notificationData.createdAt || new Date(),
+                userId: notificationData.userId,
+                content: notificationData.content,
+            });
+        });
+        console.log(
+            `Notificación enviada a Usuario ${userId} en los sockets ${[
+                ...sockets,
+            ]}`
+        );
+    } else {
+        console.log(`Usuario ${userId} no tiene sockets conectados`);
+    }
 
     return newNotification;
 };
@@ -108,55 +158,24 @@ const deleteNotification = async (id) => {
 };
 
 const sendNotification = (userId, type, data = {}) => {
-    const socketId = connectedUsers.get(userId);
+    const sockets = connectedUsers.get(userId);
 
-    if (socketId) {
-        io.to(socketId).emit("new-notification", {
-            title: data.title,
-            message: data.message,
-            type: type,
+    if (sockets && sockets.size > 0) {
+        sockets.forEach((socketId) => {
+            io.to(socketId).emit("new-notification", {
+                title: data.title,
+                message: data.message,
+                type: type,
+            });
         });
         console.log(
-            `Notificación enviada a Usuario ${userId} en el socket ${socketId}`
+            `Notificación enviada a Usuario ${userId} en los sockets ${[
+                ...sockets,
+            ]}`
         );
     } else {
-        console.log(`Usuario ${userId} no está conectado ahora`);
+        console.log(`Usuario ${userId} no tiene sockets conectados`);
     }
-};
-
-// Función para notificar un nuevo mensaje
-const notifyNewMessage = (userId, messageContent) => {
-    sendNotification(userId, "new_message", { content: messageContent });
-};
-
-// Función para notificar cambio de estado en un chat
-const notifyChatStatusChange = (userId, newStatus) => {
-    sendNotification(userId, "chat_status_change", { status: newStatus });
-};
-
-// Función para notificar asignación de agente
-const notifyAgentAssigned = (userId, agentName) => {
-    sendNotification(userId, "agent_assigned", { agent: agentName });
-};
-
-// Función para notificar comprobante recibido
-const notifyVoucherReceived = (userId, voucherDetails) => {
-    sendNotification(userId, "voucher_received", { voucher: voucherDetails });
-};
-
-// Función para notificar solicitud de agente
-const notifyUserRequestAgent = (userId) => {
-    sendNotification(io, userId, "user_request_agent", {});
-};
-
-// Función para notificar chat cerrado
-const notifyChatClosed = (userId) => {
-    sendNotification(userId, "chat_closed", {});
-};
-
-// Función para notificar recordatorio
-const notifyReminder = (userId, reminderDetails) => {
-    sendNotification(userId, "reminder", { reminder: reminderDetails });
 };
 
 module.exports = {
@@ -169,4 +188,6 @@ module.exports = {
     sendNotification,
     setIoInstance,
     setNotificationsUsers,
+    connectedUsers,
+    removeNotificationSocket,
 };

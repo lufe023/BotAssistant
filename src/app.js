@@ -56,14 +56,15 @@ const io = new Server(server, {
 notificationsControllers.setIoInstance(io);
 
 io.on("connection", (socket) => {
-    // Manejar autenticación (ya implementado)
+    console.log(`Cliente conectado: ${socket.id}`);
+
+    // Manejar autenticación
     socket.on("authenticate", (token) => {
         try {
-            const decoded = jwt.verify(token, jwtSecret);
+            const decoded = jwt.verify(token, process.env.JWT_SECRET);
             const userId = decoded.id;
 
             if (userId) {
-                // Actualiza el socket del usuario
                 notificationsControllers.setNotificationsUsers(
                     userId,
                     socket.id
@@ -77,36 +78,20 @@ io.on("connection", (socket) => {
         }
     });
 
-    // Escuchar mensajes enviados
-    socket.on("message", async (data, token) => {
-        try {
-            const { chatId, receiverId, message } = data;
-
-            // Verificar el token y extraer el senderId
-            const decoded = jwt.verify(token, process.env.JWT_SECRET);
-            const senderId = decoded.id;
-
-            if (!message || !receiverId) {
-                throw new Error(
-                    'Los campos "message" y "receiverId" son obligatorios'
-                );
-            }
-
-            const newMessage = await chatServices.createMessage(
-                chatId,
-                { receiverId, message },
-                senderId
-            );
-
-            // Emitir el mensaje a los usuarios conectados
-            io.to(chatId).emit("message", newMessage);
-        } catch (error) {
-            console.error("Error al manejar el mensaje:", error.message);
-        }
-    });
-
+    // Manejar desconexión
     socket.on("disconnect", () => {
         console.log(`Socket desconectado: ${socket.id}`);
+
+        const userId = [
+            ...notificationsControllers.connectedUsers.entries(),
+        ].find(([, sockets]) => sockets.has(socket.id))?.[0];
+
+        if (userId) {
+            notificationsControllers.removeNotificationSocket(
+                userId,
+                socket.id
+            );
+        }
     });
 });
 

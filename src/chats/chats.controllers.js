@@ -24,7 +24,7 @@ const getAllchats = async () => {
         where: { status: "active" },
         include: [
             { model: Users, as: "user" },
-            { model: Messages, as: "messages" },
+            { model: Messages, as: "messages", order: [["sentAt", "ASC"]] },
         ],
     });
 
