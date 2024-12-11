@@ -1,44 +1,109 @@
-# Bot Asistente
+# BotAssistant
 
-**SocialMediaServices** es una interfaz avanzada para interactuar con la API de [jqaw.org](https://jqaw.org/). Esta aplicación está diseñada para mejorar la experiencia del usuario al trabajar con servicios de redes sociales, proporcionando una interfaz intuitiva y funcionalidades mejoradas para gestionar y analizar datos de redes sociales.
+BotAssistant es un proyecto diseñado para atender a los clientes de un hotel a través de WhatsApp. Su función principal es gestionar reservaciones, brindar atención al cliente, proporcionar información de disponibilidad y precios, todo mediante WhatsApp. Además, el proyecto incluye funcionalidades completas de administración hotelera.
 
 ## Características
 
--   **Interfaz de Usuario Mejorada**: Una interfaz moderna y fácil de usar para interactuar con la API de jqaw.org.
--   **Gestión de Datos**: Herramientas para gestionar y analizar datos de redes sociales de manera eficiente.
--   **Integración Completa**: Acceso completo a la funcionalidad de la API de jqaw.org para obtener información sobre perfiles sociales, publicaciones, y más.
--   **Actualizaciones en Tiempo Real**: Recibe actualizaciones en tiempo real sobre los datos de las redes sociales.
+- **Bot de atención al cliente:** Permite a los usuarios realizar consultas y gestionar reservaciones vía WhatsApp.
+- **Gestión hotelera:** Herramientas para administrar habitaciones, huéspedes, precios y disponibilidad.
+- **Punto de venta:** Sistema integrado para gestionar las ventas del hotel.
+- **Informes:** Generación de reportes detallados sobre habitaciones, huéspedes y más.
+- **Integración con WhatsApp Web:** Automatización de interacciones usando WhatsApp Web.
+
+## Requisitos previos
+
+Antes de comenzar, asegúrate de tener los siguientes elementos instalados en tu entorno:
+
+- [Node.js](https://nodejs.org/) (versión 16 o superior)
+- [npm](https://www.npmjs.com/) o [yarn](https://yarnpkg.com/)
+- Google Chrome (para la automatización de WhatsApp Web)
+- [Puppeteer](https://pptr.dev/) (se instala con las dependencias del proyecto)
 
 ## Instalación
 
-Para instalar el proyecto, clona este repositorio y luego ejecuta el siguiente comando:
+1. Clona el repositorio:
 
-```bash
-git clone https://github.com/lufe023/SocialMediaServices.git
-cd SocialMediaServices
-npm install
-```
+   ```bash
+   git clone https://github.com/lufe023/BotAssistant.git
+   cd BotAssistant
+   ```
+
+2. Instala las dependencias:
+
+   ```bash
+   npm install
+   # o
+   yarn install
+   ```
+
+3. Crea un archivo `.env` en la raíz del proyecto con las siguientes variables:
+
+   ```env
+   BOT_NAME=BotAssistant
+   PORT=3000
+   ```
+
+4. Inicia la aplicación:
+
+   ```bash
+   npm start
+   # o
+   yarn start
+   ```
+
+5. Escanea el código QR que aparecerá en la terminal con tu aplicación de WhatsApp para iniciar la sesión.
 
 ## Uso
 
-Para ejecutar la aplicación, utiliza el siguiente comando:
+1. Una vez que el bot esté conectado, comenzará a responder mensajes automáticamente.
+2. Los usuarios pueden consultar disponibilidad, precios y realizar reservaciones directamente desde WhatsApp.
+3. Accede al panel administrativo para gestionar habitaciones, generar informes y realizar tareas administrativas del hotel.
 
-```bash
-npm start
+## Estructura del proyecto
+
+```
+BotAssistant/
+├── src/
+│   ├── controllers/
+│   ├── services/
+│   ├── utils/
+│   └── index.js
+├── .env.example
+├── package.json
+├── README.md
+└── ...
 ```
 
-Asegúrate de tener las credenciales adecuadas para acceder a la API de jqaw.org. Configura tu archivo de configuración con las claves API necesarias.configuralas en una variable de entorno llamada JQAW_API_KEY
+- **`src/controllers/`**: Contiene la lógica del bot y las funcionalidades administrativas.
+- **`src/services/`**: Servicios auxiliares para la gestión de datos.
+- **`src/utils/`**: Utilidades comunes para el proyecto.
+- **`index.js`**: Archivo principal del backend.
 
-## Contribuciones
+## Contribución
 
-Las contribuciones son bienvenidas. Si deseas contribuir al proyecto, por favor sigue estos pasos:
+¡Las contribuciones son bienvenidas! Si deseas mejorar este proyecto, sigue los pasos a continuación:
 
--   Haz un fork del repositorio.
--   Crea una rama para tus cambios (git checkout -b feature/nueva-funcionalidad).
--   Realiza los cambios y haz un commit (git commit -am 'Añadir nueva funcionalidad').
--   Haz push a la rama (git push origin feature/nueva-funcionalidad).
--   Abre una pull request.
+1. Haz un fork del repositorio.
+2. Crea una rama con una descripción clara de tu funcionalidad:
+   ```bash
+   git checkout -b nueva-funcionalidad
+   ```
+3. Realiza tus cambios y haz un commit:
+   ```bash
+   git commit -m "Agrega nueva funcionalidad"
+   ```
+4. Haz un push a tu rama:
+   ```bash
+   git push origin nueva-funcionalidad
+   ```
+5. Abre un Pull Request en el repositorio original.
+
+## Licencia
+
+Este proyecto está bajo la licencia MIT. Consulta el archivo [LICENSE](./LICENSE) para más detalles.
 
 ## Contacto
 
-Para más información, contacta a Luis Gómez en lufe023@gmail.com.
+- **Autor:** Luis Gómez
+- **Correo:** lufe023@gmail.com
+- **GitHub:** [lufe023](https://github.com/lufe023)
