@@ -1,4 +1,4 @@
-# Hotel Whatsapp BotAssistant
+#Hotel Whatsapp BotAssistant
 
 BotAssistant es un proyecto diseñado para atender a los clientes de un hotel a través de WhatsApp. Su función principal es gestionar reservaciones, brindar atención al cliente, proporcionar información de disponibilidad y precios, todo mediante WhatsApp. Además, el proyecto incluye funcionalidades completas de administración hotelera.
 
@@ -9,6 +9,7 @@ BotAssistant es un proyecto diseñado para atender a los clientes de un hotel a 
 - **Punto de venta:** Sistema integrado para gestionar las ventas del hotel.
 - **Informes:** Generación de reportes detallados sobre habitaciones, huéspedes y más.
 - **Integración con WhatsApp Web:** Automatización de interacciones usando WhatsApp Web.
+--**Atencion al cliente via el chat de la app y directamente llegando los mensajes al whatsapp del cliente.
 
 ## Requisitos previos
 
@@ -16,7 +17,6 @@ Antes de comenzar, asegúrate de tener los siguientes elementos instalados en tu
 
 - [Node.js](https://nodejs.org/) (versión 16 o superior)
 - [npm](https://www.npmjs.com/) o [yarn](https://yarnpkg.com/)
-- Google Chrome (para la automatización de WhatsApp Web)
 - [Puppeteer](https://pptr.dev/) (se instala con las dependencias del proyecto)
 
 ## Instalación
@@ -39,8 +39,28 @@ Antes de comenzar, asegúrate de tener los siguientes elementos instalados en tu
 3. Crea un archivo `.env` en la raíz del proyecto con las siguientes variables:
 
    ```env
-   BOT_NAME=BotAssistant
-   PORT=3000
+  NODE_ENV='developer'
+PORT=9000
+HOST="http://localhost:9000"
+DB_HOST=
+DB_PORT=
+DB_USERNAME=
+DB_PASS= 
+DB_NAME=
+JWT_SECRET=
+
+
+#Session con google
+FRONTEND_HOST=
+GOOGLE_CLIENT_ID=
+GOOGLE_CLIENT_SECRET=
+SESSION_SECRET=
+
+#Configuracion para enviar emails de recuperacion de contraseña, buscar la configuracion de correo smtp de su provedor de correo electronico
+HOST_EMAIL_SENDER=
+HOST_EMAIL_PORT=
+EMAIL_HOST_USER=
+PASSWORD_HOST_USER=
    ```
 
 4. Inicia la aplicación:
@@ -56,8 +76,9 @@ Antes de comenzar, asegúrate de tener los siguientes elementos instalados en tu
 ## Uso
 
 1. Una vez que el bot esté conectado, comenzará a responder mensajes automáticamente.
-2. Los usuarios pueden consultar disponibilidad, precios y realizar reservaciones directamente desde WhatsApp.
-3. Accede al panel administrativo para gestionar habitaciones, generar informes y realizar tareas administrativas del hotel.
+2. Los usuarios pueden consultar disponibilidad, precios y realizar reservaciones directamente desde WhatsApp o pedir hablar con un agente humano.
+3. Los usuarios podrán hablar con los agentes humanos que se encuentren disponibles en la app.
+4. Accede al panel administrativo para gestionar habitaciones, generar informes y realizar tareas administrativas del hotel.
 
 ## Estructura del proyecto
 
