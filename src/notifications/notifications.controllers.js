@@ -86,38 +86,6 @@ const createNotification = async (notificationData) => {
         content: notificationData.content,
     });
 
-    // console.log("Los usuarios conectados son: " + connectedUsers);
-    // Obtener el socketId del usuario específico
-    // if (io) {
-    //     io.emit("new-notification", {
-    //         title: notificationData.title,
-    //         message: notificationData.message,
-    //         type: notificationData.type,
-    //     });
-    //     console.log(
-    //         `Notificación enviada a Usuario ${notificationData.userId}`
-    //     );
-    // } else {
-    //     console.error(
-    //         `Usuario ${notificationData.userId} no está conectado o Socket.IO no está disponible.`
-    //     );
-    // }
-    // console.log(socketId);
-    // if (io && socketId) {
-    //     io.to(socketId).emit("new-notification", {
-    //         title: notificationData.title,
-    //         message: notificationData.message,
-    //         type: notificationData.type,
-    //         status: notificationData.status,
-    //         createdAt: notificationData.createdAt || new Date(),
-    //         userId: notificationData.userId,
-    //         content: notificationData.content,
-    //     });
-    //     console.log(
-    //         `Notificación enviada a Usuario ${notificationData.userId} al socket ${socketId}`
-    //     );
-    // }
-
     const sockets = connectedUsers.get(notificationData.userId);
 
     if (sockets && sockets.size > 0) {

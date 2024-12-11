@@ -4,11 +4,35 @@ const uuid = require("uuid");
 const Rooms = require("../models/rooms.models");
 const { Op } = require("sequelize");
 const Configurations = require("../models/configurations.models");
+const Users = require("../models/users.models");
 
 const getAllReservations = async (offset, limit) => {
     return await Reservations.findAndCountAll({
         offset,
         limit,
+    });
+};
+
+const getReservationsToWork = async (offset, limit) => {
+    return await Reservations.findAndCountAll({
+        offset,
+        limit,
+        where: {
+            [Op.or]: [{ status: "Pending" }, { status: "Approved" }],
+        },
+        include: [
+            {
+                model: Users,
+                as: "guest",
+                attributes: {
+                    exclude: ["password"],
+                },
+            },
+            {
+                model: Rooms,
+                as: "Room",
+            },
+        ],
     });
 };
 
@@ -324,4 +348,5 @@ module.exports = {
     getReservationsByDateRange,
     calculateAvailabilityAndCost,
     getAvailableDates,
+    getReservationsToWork,
 };

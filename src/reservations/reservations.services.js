@@ -33,6 +33,38 @@ const getAllReservations = (req, res) => {
         });
 };
 
+const getReservationsToWork = (req, res) => {
+    const offset = Number(req.query.offset) || 0;
+    const limit = Number(req.query.limit) || 50;
+    const urlBase = `${req.protocol}://${req.get("host")}/api/v1/reservations`;
+
+    reservationsControllers
+        .getReservationsToWork(offset, limit)
+        .then((data) => {
+            const nextPage =
+                data.count - offset > limit
+                    ? `${urlBase}?offset=${offset + limit}&limit=${limit}`
+                    : null;
+            res.status(200).json({
+                next: nextPage,
+                prev:
+                    offset > 0
+                        ? `${urlBase}?offset=${Math.max(
+                              offset - limit,
+                              0
+                          )}&limit=${limit}`
+                        : null,
+                offset,
+                limit,
+                count: data.count,
+                results: data.rows,
+            });
+        })
+        .catch((err) => {
+            res.status(400).json({ message: err.message });
+        });
+};
+
 const getReservationById = (req, res) => {
     const { id } = req.params;
     reservationsControllers
@@ -150,4 +182,5 @@ module.exports = {
     deleteReservation,
     getReservationsByDateRange,
     getAvailableDates,
+    getReservationsToWork,
 };

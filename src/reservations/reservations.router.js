@@ -13,6 +13,13 @@ router.get(
     reservationsServices.getAllReservations
 );
 
+router.get(
+    "/getReservationsToWork",
+    passport.authenticate("jwt", { session: false }),
+    roleValidate(["Administrator"]),
+    reservationsServices.getReservationsToWork
+);
+
 router.get("/date-range", reservationsServices.getReservationsByDateRange);
 router.get("/available-dates", reservationsServices.getAvailableDates);
 

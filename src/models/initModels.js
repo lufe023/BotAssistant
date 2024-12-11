@@ -54,6 +54,8 @@ const initModels = () => {
     Reservations.belongsTo(Rooms, { foreignKey: "roomId", as: "Room" });
     Rooms.hasMany(Reservations, { foreignKey: "roomId", as: "Reservations" });
 
+    Reservations.belongsTo(Users, { foreignKey: "userId", as: "guest" });
+
     Chats.belongsTo(Users, { as: "user", foreignKey: "userId" });
     Chats.belongsTo(Users, { as: "agent", foreignKey: "agentId" });
     Chats.hasMany(Messages, { as: "messages", foreignKey: "chatId" });

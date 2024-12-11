@@ -27,7 +27,7 @@ router.post(
     notificationsServices.createNotification
 );
 
-router.put(
+router.patch(
     "/:id",
     passport.authenticate("jwt", { session: false }),
     roleValidate(["Administrator"]),
