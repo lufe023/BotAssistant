@@ -1,4 +1,4 @@
-# BotAssistant
+# Hotel Whatsapp BotAssistant
 
 BotAssistant es un proyecto diseñado para atender a los clientes de un hotel a través de WhatsApp. Su función principal es gestionar reservaciones, brindar atención al cliente, proporcionar información de disponibilidad y precios, todo mediante WhatsApp. Además, el proyecto incluye funcionalidades completas de administración hotelera.
 
