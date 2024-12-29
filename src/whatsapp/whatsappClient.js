@@ -190,7 +190,7 @@ const initializeClient = () => {
                                 "🤝🏻 de acuerdo, indiqueme su *nombre* y de inmediato un agente nuestro le atenderá"
                             );
 
-                            chatState.stage = 3;
+                            chatState.stage = 3.1;
                             //esperando que el usuario responda
                         }
 

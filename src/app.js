@@ -27,14 +27,11 @@ const galleryImagesRoutes = require("./galleryImages/galleryImages.routes");
 const galleriesRoutes = require("./galleries/galleries.routes");
 const notificationsRouter = require("./notifications/notifications.router");
 const chatsRouter = require("./chats/chats.routes");
+const issueRouter = require("./roomIssues/roomIssues.router");
+const cleaningRouter = require("./roomCleaning/roomCleanings.routes");
 
 const initModels = require("./models/initModels");
 const path = require("path");
-const {
-    setIoInstance,
-    removeConnectedUser,
-    addConnectedUser,
-} = require("./utils/socketManager");
 
 //? Initial Configs
 const app = express();
@@ -124,7 +121,7 @@ db.authenticate()
     });
 
 // db.sync({ alter: true })
-db.sync({ alter: true })
+db.sync({ alter: false })
     .then(() => {
         console.log("Database Synced");
     })
@@ -152,6 +149,8 @@ app.use("/api/v1/galleries", galleriesRoutes);
 app.use("/api/v1/gallery-images", galleryImagesRoutes);
 app.use("/api/v1/notifications", notificationsRouter);
 app.use("/api/v1/chats", chatsRouter);
+app.use("/api/v1/issues", issueRouter);
+app.use("/api/v1/cleanings", cleaningRouter);
 
 // Endpoint para generar la colección de Postman
 app.get("/api/v1/generate-postman-collection", (req, res) => {

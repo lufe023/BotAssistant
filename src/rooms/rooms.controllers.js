@@ -8,6 +8,8 @@ const Users = require("../models/users.models");
 const RoomIssues = require("../models/room_issues.models");
 const ServiceReservations = require("../models/serviceReservations.models");
 const Services = require("../models/services.models");
+const RoomCleanings = require("../models/RoomCleanings");
+const { Op } = require("sequelize");
 const getAllRooms = async (offset, limit) => {
     const data = await Rooms.findAndCountAll({
         offset: offset,
@@ -18,7 +20,7 @@ const getAllRooms = async (offset, limit) => {
 };
 
 const getRoomById = async (id) => {
-    return await Rooms.findByPk(id, {
+    const room = await Rooms.findByPk(id, {
         include: [
             {
                 model: Galleries,
@@ -27,7 +29,7 @@ const getRoomById = async (id) => {
             },
             {
                 model: Reservations,
-                where: { status: "Pending" }, // Solo incluir reservas pendientes
+                // where: { status: "Pending" }, // Solo incluir reservas pendientes
                 required: false,
                 include: [
                     {
@@ -42,8 +44,72 @@ const getRoomById = async (id) => {
                     },
                 ],
             },
+            {
+                model: RoomCleanings,
+                required: false, // Incluye habitaciones sin reservas
+                where: [{ status: "Pending" }],
+            },
+            {
+                model: RoomIssues,
+                required: false, // Incluye habitaciones sin reservasx
+                where: {
+                    [Op.or]: [{ status: "In Progress" }, { status: "Pending" }],
+                },
+            },
         ],
     });
+
+    if (room.room_cleanings && room.room_cleanings.length > 0) {
+        room.setDataValue("status", "cleaning");
+    } else if (room.room_issues && room.room_issues.length > 0) {
+        room.setDataValue("status", "repairing");
+        console.log("aqui entre y encontré un problema");
+    } else if (room.reservations && room.reservations.length > 0) {
+        const now = new Date();
+
+        // Iteramos sobre todas las reservaciones
+        const isOccupied = room.reservations.some((reservation) => {
+            const checkInDate = new Date(reservation.checkIn);
+            const checkOutDate = new Date(reservation.checkOut);
+
+            // Verificamos si la fecha actual está entre checkIn y checkOut
+            return (
+                checkInDate <= now &&
+                checkOutDate >= now &&
+                reservation.status === "Approved"
+            );
+        });
+
+        if (isOccupied) {
+            // Si está ocupada, establecemos el estado en "occupied"
+            room.setDataValue("status", "occupied");
+        } else {
+            const hasPendingReservation = room.reservations.some(
+                (reservation) => {
+                    const checkInDate = new Date(reservation.checkIn);
+                    const checkOutDate = new Date(reservation.checkOut);
+
+                    // Verificamos si la fecha actual está entre checkIn y checkOut
+                    return (
+                        checkInDate <= now &&
+                        checkOutDate >= now &&
+                        reservation.status === "Pending"
+                    );
+                }
+            );
+
+            if (hasPendingReservation) {
+                room.setDataValue("status", "pendingReservation"); // Reservada para el futuro
+            } else {
+                room.setDataValue("status", "available"); // No tiene reservas
+            }
+        }
+    } else {
+        // Si no hay reservaciones, la habitación está disponible
+        room.setDataValue("status", "available");
+    }
+
+    return room;
 };
 
 const createRoom = async (roomData) => {

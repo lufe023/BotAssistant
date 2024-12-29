@@ -12,6 +12,7 @@ const Chats = require("./chats.models");
 const Messages = require("./messages.models");
 const Notifications = require("./notifications.models");
 const configurations = require("./configurations.models");
+const RoomCleanings = require("./roomCleanings");
 
 const initModels = () => {
     // Relación entre Usuarios y Roles
@@ -62,6 +63,14 @@ const initModels = () => {
 
     Messages.belongsTo(Chats, { foreignKey: "chatId" });
     Messages.belongsTo(Users, { as: "sender", foreignKey: "senderId" });
+
+    // Relación de Rooms con RoomCleanings
+    Rooms.hasMany(RoomCleanings, { foreignKey: "roomId" });
+    RoomCleanings.belongsTo(Rooms, { foreignKey: "roomId" });
+
+    // Relación de Users con RoomCleanings
+    Users.hasMany(RoomCleanings, { foreignKey: "userId" });
+    RoomCleanings.belongsTo(Users, { foreignKey: "userId" });
 
     Notifications.belongsTo(Users, { foreignKey: "userId" });
 };

@@ -1,4 +1,4 @@
-const roomIssuesControllers = require("../controllers/roomIssues.controllers");
+const roomIssuesControllers = require("./roomIssues.controllers");
 
 const getAllRoomIssues = async (req, res) => {
     try {

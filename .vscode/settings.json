@@ -13,5 +13,6 @@
         "titleBar.inactiveBackground": "#a52a2a99",
         "titleBar.inactiveForeground": "#e7e7e799"
     },
-    "peacock.color": "#A52A2A"
+    "peacock.color": "#A52A2A",
+    "CodeGPT.apiKey": "CodeGPT Plus Beta"
 }
