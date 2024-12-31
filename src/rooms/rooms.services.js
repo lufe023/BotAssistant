@@ -95,7 +95,6 @@ const deleteRoom = (req, res) => {
 
 const getRoomHistory = (req, res) => {
     const { id } = req.params;
-    console.log("El id buscado es :" + id);
     roomsControllers
         .getRoomHistory(id)
         .then((data) => {

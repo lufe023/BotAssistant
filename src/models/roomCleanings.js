@@ -22,7 +22,7 @@ const RoomCleanings = db.define(
         userId: {
             type: DataTypes.UUID,
             references: {
-                model: Users, // Usuario que realizó o programó la limpieza
+                model: Users, // Usuario que realiza la limpieza
                 key: "id",
             },
             allowNull: false,

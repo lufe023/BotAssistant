@@ -70,7 +70,7 @@ const initModels = () => {
 
     // Relación de Users con RoomCleanings
     Users.hasMany(RoomCleanings, { foreignKey: "userId" });
-    RoomCleanings.belongsTo(Users, { foreignKey: "userId" });
+    RoomCleanings.belongsTo(Users, { as: "cleanedBy", foreignKey: "userId" });
 
     Notifications.belongsTo(Users, { foreignKey: "userId" });
 };

@@ -110,7 +110,7 @@ const initializeClient = () => {
 
                         // Informar al cliente que será conectado con un agente
                         await message.reply(
-                            "En este momento, te pondremos en contacto con uno de nuestros agentes. Por favor, espera un momento. 🙋‍♂️"
+                            "Hola soy el Bot en este momento, te pondré en contacto con uno de nuestros agentes. Por favor, espera un momento. 🙋‍♂️"
                         );
                     } else {
                         await message.reply(

@@ -2,7 +2,7 @@ const { Op, Sequelize } = require("sequelize"); // Para operaciones avanzadas en
 const Rooms = require("../models/rooms.models");
 const Galleries = require("../models/galleries.models");
 const Reservations = require("../models/reservations.models");
-const RoomCleanings = require("../models/RoomCleanings");
+const RoomCleanings = require("../models/roomCleanings");
 const RoomIssues = require("../models/room_issues.models");
 const Configurations = require("../models/configurations.models");
 

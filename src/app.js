@@ -121,7 +121,7 @@ db.authenticate()
     });
 
 // db.sync({ alter: true })
-db.sync({ alter: false })
+db.sync({ alter: true })
     .then(() => {
         console.log("Database Synced");
     })

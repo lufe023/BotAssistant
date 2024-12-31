@@ -8,7 +8,7 @@ const Users = require("../models/users.models");
 const RoomIssues = require("../models/room_issues.models");
 const ServiceReservations = require("../models/serviceReservations.models");
 const Services = require("../models/services.models");
-const RoomCleanings = require("../models/RoomCleanings");
+const RoomCleanings = require("../models/roomCleanings");
 const { Op } = require("sequelize");
 const getAllRooms = async (offset, limit) => {
     const data = await Rooms.findAndCountAll({
@@ -20,6 +20,13 @@ const getAllRooms = async (offset, limit) => {
 };
 
 const getRoomById = async (id) => {
+    //estas variables son importantes para determinar las fechas 15 dias antes y 15 dias despues
+    const now = new Date();
+    const pastDate = new Date();
+    pastDate.setDate(now.getDate() - 15);
+    const futureDate = new Date();
+    futureDate.setDate(now.getDate() + 15);
+
     const room = await Rooms.findByPk(id, {
         include: [
             {
@@ -29,8 +36,25 @@ const getRoomById = async (id) => {
             },
             {
                 model: Reservations,
-                // where: { status: "Pending" }, // Solo incluir reservas pendientes
                 required: false,
+                //Este where es para limitar la consulta de reservaciones a las que esten entre 15 dias antes y 15 dias despues pero sin importar la fecha siempre incluirá las reservaciones pendientes.
+                where: {
+                    [Op.or]: [
+                        {
+                            checkIn: {
+                                [Op.between]: [pastDate, futureDate],
+                            },
+                        },
+                        {
+                            checkOut: {
+                                [Op.between]: [pastDate, futureDate],
+                            },
+                        },
+                        {
+                            status: "Pending",
+                        },
+                    ],
+                },
                 include: [
                     {
                         model: Users,
@@ -46,8 +70,17 @@ const getRoomById = async (id) => {
             },
             {
                 model: RoomCleanings,
-                required: false, // Incluye habitaciones sin reservas
-                where: [{ status: "Pending" }],
+                required: false,
+                where: {
+                    status: "Pending",
+                },
+                include: [
+                    {
+                        model: Users,
+                        as: "cleanedBy",
+                        attributes: ["firstName", "lastName", "picture"],
+                    },
+                ],
             },
             {
                 model: RoomIssues,
@@ -63,7 +96,6 @@ const getRoomById = async (id) => {
         room.setDataValue("status", "cleaning");
     } else if (room.room_issues && room.room_issues.length > 0) {
         room.setDataValue("status", "repairing");
-        console.log("aqui entre y encontré un problema");
     } else if (room.reservations && room.reservations.length > 0) {
         const now = new Date();
 
@@ -174,6 +206,19 @@ const getRoomHistory = async (roomId) => {
             order: [["reportedAt", "ASC"]], // Ordenar por la fecha de reporte
         });
 
+        // Obtener todas las limpiezas hechas a la habitación
+        const cleanings = await RoomCleanings.findAll({
+            where: { roomId },
+            order: [["cleaningDate", "ASC"]], // Ordenar por la fecha de reporte
+            include: [
+                {
+                    model: Users,
+                    as: "cleanedBy",
+                    attributes: ["firstName", "lastName", "picture"],
+                },
+            ],
+        });
+
         // Crear un array para almacenar todos los eventos (reservas, problemas)
         let history = [];
 
@@ -225,8 +270,29 @@ const getRoomHistory = async (roomId) => {
                           ).toLocaleDateString("es-ES")}`
                         : "Pendiente de resolución"
                 }`,
-                status: issue.resolvedAt ? "Resolved" : "Pending",
+                status: issue.status,
                 data: issue,
+            });
+        });
+
+        // Agregar las limpiezas reportadas a la historia
+        cleanings.forEach((cleaning) => {
+            history.push({
+                type: "Cleaning",
+                date: new Date(cleaning.cleaningDate).toLocaleDateString(
+                    "es-ES"
+                ),
+                description: `${cleaning.cleaningType}: ${cleaning.notes}.
+                solicitado el ${new Date(cleaning.createdAt).toLocaleDateString(
+                    "es-ES"
+                )}.
+                y programado para el ${new Date(
+                    cleaning.cleaningDate
+                ).toLocaleDateString("es-ES")}.
+                asignado a ${cleaning.cleanedBy.firstName}
+                `,
+                status: cleaning.status,
+                data: cleaning,
             });
         });
 
