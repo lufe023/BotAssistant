@@ -170,4 +170,5 @@ module.exports = {
     createMessage,
     createChatWithMessage,
     createChatWithNotification,
+    sentToWhatsapp,
 };

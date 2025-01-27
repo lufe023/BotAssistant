@@ -5,6 +5,7 @@ const Reservations = require("../models/reservations.models");
 const RoomCleanings = require("../models/roomCleanings");
 const RoomIssues = require("../models/room_issues.models");
 const Configurations = require("../models/configurations.models");
+const Areas = require("../models/areas.models");
 
 const getAllRooms = async (offset, limit) => {
     const today = new Date();
@@ -35,86 +36,6 @@ const getAllRooms = async (offset, limit) => {
     });
 
     return data;
-};
-
-const getRoomStatusSummaryol = async (ubication) => {
-    const today = new Date();
-
-    // Solo aplica la condición de ubicación si se proporciona un valor válido
-    const roomConditions = ubication ? { ubication } : {};
-
-    // Contar habitaciones ocupadas hoy en la ubicación especificada (o en todas si `ubication` es falsy)
-    const pendingReservations = await Reservations.count({
-        where: {
-            // checkInDate: { [Op.lte]: today },
-            // checkOutDate: { [Op.gte]: today },
-            status: "Pending",
-        },
-        include: [
-            {
-                model: Rooms,
-                where: roomConditions, // Condición de ubicación si existe, o ninguna si es falsy
-            },
-        ],
-    });
-
-    // Llamar todas las habitaciones
-    const allRooms = await Rooms.findAll({
-        where: {
-            ...roomConditions,
-        },
-        order: [["roomNumber", "ASC"]],
-    });
-
-    // Contar habitaciones en limpieza en la ubicación especificada (o en todas)
-    const roomsCleaningToday = await Rooms.count({
-        where: {
-            ...roomConditions,
-            status: "cleaning",
-        },
-    });
-
-    // Contar habitaciones disponibles en la ubicación especificada (o en todas)
-    const roomsAvailable = await Rooms.count({
-        where: {
-            ...roomConditions,
-            status: "available",
-        },
-    });
-
-    // Contar habitaciones reparando en la ubicación especificada (o en todas)
-    const roomsRepairing = await Rooms.count({
-        where: {
-            ...roomConditions,
-            status: "repairing",
-        },
-    });
-
-    // Contar habitaciones ocupadas en la ubicación especificada (o en todas)
-    const roomsOccupiedToday = await Rooms.count({
-        where: {
-            ...roomConditions,
-            status: "occupied",
-        },
-    });
-
-    // Obtener todas las ubicaciones únicas y ordenarlas alfabéticamente
-    const allUbications = await Rooms.findAll({
-        attributes: [
-            [Sequelize.fn("DISTINCT", Sequelize.col("ubication")), "ubication"],
-        ],
-        order: [[Sequelize.col("ubication"), "ASC"]], // Ordenar las ubicaciones alfabéticamente
-    }).then((locations) => locations.map((loc) => loc.ubication));
-
-    return {
-        occupied: roomsOccupiedToday,
-        cleaning: roomsCleaningToday,
-        available: roomsAvailable,
-        repairing: roomsRepairing,
-        pendingReservations,
-        allRooms,
-        allUbications, // Agregamos el dato de todas las ubicaciones
-    };
 };
 
 const getRoomStatusSummary = async (ubication) => {
@@ -220,15 +141,7 @@ const getRoomStatusSummary = async (ubication) => {
         });
 
         // Obtener todas las ubicaciones únicas y ordenarlas alfabéticamente
-        const allUbications = await Rooms.findAll({
-            attributes: [
-                [
-                    Sequelize.fn("DISTINCT", Sequelize.col("ubication")),
-                    "ubication",
-                ],
-            ],
-            order: [[Sequelize.col("ubication"), "ASC"]],
-        }).then((locations) => locations.map((loc) => loc.ubication));
+        const allUbications = await Areas.findAll({ order: [["name", "ASC"]] });
 
         // Retornar el resumen y los detalles de cada habitación
         return {

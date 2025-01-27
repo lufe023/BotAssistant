@@ -8,6 +8,8 @@ const { Model } = require("sequelize");
 
 const Roles = require("../models/roles.models");
 const { Sequelize, Op } = require("sequelize");
+const Reservations = require("../models/reservations.models");
+const Rooms = require("../models/rooms.models");
 const getAllUsers = async (offset, limit) => {
     const data = await Users.findAll({
         offset: offset,
@@ -186,12 +188,21 @@ const findUserController = async (findWord) => {
 
     const data = await Users.findAndCountAll({
         limit: 5,
+        attributes: { exclude: ["password"] },
         where: {
             [Op.or]: whereConditions,
         },
         include: [
             {
                 model: Roles,
+            },
+            {
+                model: Reservations,
+                include: [
+                    {
+                        model: Rooms,
+                    },
+                ],
             },
         ],
     });

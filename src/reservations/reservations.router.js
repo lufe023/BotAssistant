@@ -92,4 +92,11 @@ router.post(
     }
 );
 
+router.patch(
+    "/:id",
+    passport.authenticate("jwt", { session: false }),
+    roleValidate(["Administrator"]),
+    reservationsServices.updateReservationAndNotify
+);
+
 module.exports = router;

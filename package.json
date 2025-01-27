@@ -2,11 +2,9 @@
   "name": "Bot Asistente",
   "version": "1.0.0",
   "description": "Bot Asistente y Sistema para manejo de Hotel, el bot puede tomar reservaciones via whatsapp Express - PostgreSQL - Sequelize ORM  - Autenticación con Tokens - Bcrypt para hashear contraseñas - Uso de Json Web Token",
-  "main": "index.js",
   "scripts": {
     "start": "node ./src/app.js",
     "dev": "nodemon ./src/app.js",
-    "day": "nodemon ./src/app.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
@@ -16,6 +14,7 @@
     "axios": "^1.7.2",
     "bcrypt": "^5.1.0",
     "cors": "^2.8.5",
+    "date-fns": "^4.1.0",
     "dotenv": "^16.0.3",
     "express": "^4.18.2",
     "express-session": "^1.18.0",

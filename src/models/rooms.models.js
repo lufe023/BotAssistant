@@ -1,6 +1,7 @@
 const db = require("../utils/database");
 const { DataTypes } = require("sequelize");
 const Galleries = require("./galleries.models");
+const Areas = require("./areas.models");
 
 const Rooms = db.define(
     "rooms",
@@ -39,8 +40,12 @@ const Rooms = db.define(
             },
         },
         ubication: {
-            type: DataTypes.STRING,
-            allowNull: false,
+            type: DataTypes.UUID,
+            allowNull: true,
+            references: {
+                model: Areas,
+                key: "id",
+            },
         },
         description: {
             type: DataTypes.TEXT,

@@ -13,6 +13,9 @@ const Messages = require("./messages.models");
 const Notifications = require("./notifications.models");
 const configurations = require("./configurations.models");
 const RoomCleanings = require("./roomCleanings");
+const Areas = require("./areas.models");
+const Invoices = require("./invoice.models");
+const InvoiceDetail = require("./invoiceDetail.models");
 
 const initModels = () => {
     // Relación entre Usuarios y Roles
@@ -28,8 +31,8 @@ const initModels = () => {
     Rooms.belongsTo(Galleries, { foreignKey: "galleryId" });
 
     // Relación entre Usuarios y Reservaciones (antes Customers y Reservations)
+    Reservations.belongsTo(Users, { as: "guest", foreignKey: "userId" });
     Users.hasMany(Reservations, { foreignKey: "userId" });
-    Reservations.belongsTo(Users, { foreignKey: "userId" });
 
     // Relación entre Habitaciones y Reservaciones
     Rooms.hasMany(Reservations, { foreignKey: "roomId" });
@@ -38,6 +41,13 @@ const initModels = () => {
     // Relación entre Habitaciones y problemas
     Rooms.hasMany(RoomIssues, { foreignKey: "roomId" });
     RoomIssues.belongsTo(Rooms, { foreignKey: "roomId" });
+
+    Rooms.hasOne(Areas, {
+        foreignKey: "id",
+        sourceKey: "ubication",
+        as: "areas",
+    });
+    Areas.belongsTo(Rooms, { foreignKey: "ubication", as: "room" });
 
     // Relación entre Pagos y Reservaciones
     Reservations.hasMany(Payments, { foreignKey: "reservationId" });
@@ -55,8 +65,6 @@ const initModels = () => {
     Reservations.belongsTo(Rooms, { foreignKey: "roomId", as: "Room" });
     Rooms.hasMany(Reservations, { foreignKey: "roomId", as: "Reservations" });
 
-    Reservations.belongsTo(Users, { foreignKey: "userId", as: "guest" });
-
     Chats.belongsTo(Users, { as: "user", foreignKey: "userId" });
     Chats.belongsTo(Users, { as: "agent", foreignKey: "agentId" });
     Chats.hasMany(Messages, { as: "messages", foreignKey: "chatId" });
@@ -73,6 +81,19 @@ const initModels = () => {
     RoomCleanings.belongsTo(Users, { as: "cleanedBy", foreignKey: "userId" });
 
     Notifications.belongsTo(Users, { foreignKey: "userId" });
+
+    Payments.hasOne(Invoices, { foreignKey: "paymentId" });
+    Invoices.belongsTo(Payments, { foreignKey: "paymentId" });
+
+    Payments.belongsTo(Reservations, { foreignKey: "reservationId" });
+    Reservations.hasMany(Payments, { foreignKey: "reservationId" });
+
+    Payments.hasOne(Invoices, { foreignKey: "paymentId" });
+    Invoices.belongsTo(Payments, { foreignKey: "paymentId" });
+
+    // Relación: Una factura puede tener varios detalles
+    Invoices.hasMany(InvoiceDetail, { foreignKey: "invoiceId" });
+    InvoiceDetail.belongsTo(Invoices, { foreignKey: "invoiceId" });
 };
 
 module.exports = initModels;

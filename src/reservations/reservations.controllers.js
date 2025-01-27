@@ -5,6 +5,8 @@ const Rooms = require("../models/rooms.models");
 const { Op } = require("sequelize");
 const Configurations = require("../models/configurations.models");
 const Users = require("../models/users.models");
+const Chats = require("../models/chats.models");
+const Messages = require("../models/messages.models");
 
 const getAllReservations = async (offset, limit) => {
     return await Reservations.findAndCountAll({
@@ -37,7 +39,24 @@ const getReservationsToWork = async (offset, limit) => {
 };
 
 const getReservationById = async (id) => {
-    return await Reservations.findByPk(id);
+    const reservation = await Reservations.findOne({
+        where: { id },
+        include: [
+            {
+                model: Users,
+                as: "guest",
+                attributes: {
+                    exclude: ["password"],
+                },
+            },
+            {
+                model: Rooms,
+                as: "Room",
+            },
+        ],
+    });
+
+    return await reservation;
 };
 
 const createReservation = async (reservationData) => {

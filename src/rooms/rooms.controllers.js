@@ -10,6 +10,7 @@ const ServiceReservations = require("../models/serviceReservations.models");
 const Services = require("../models/services.models");
 const RoomCleanings = require("../models/roomCleanings");
 const { Op } = require("sequelize");
+const Areas = require("../models/areas.models");
 const getAllRooms = async (offset, limit) => {
     const data = await Rooms.findAndCountAll({
         offset: offset,
@@ -58,6 +59,7 @@ const getRoomById = async (id) => {
                 include: [
                     {
                         model: Users,
+                        as: "guest",
                         attributes: [
                             "firstName",
                             "lastName",
@@ -88,6 +90,10 @@ const getRoomById = async (id) => {
                 where: {
                     [Op.or]: [{ status: "In Progress" }, { status: "Pending" }],
                 },
+            },
+            {
+                model: Areas,
+                as: "areas",
             },
         ],
     });

@@ -1,5 +1,6 @@
 // services/reservations.services.js
 const reservationsControllers = require("./reservations.controllers");
+const reservationsAlter = require("./reservations.Alter");
 
 const getAllReservations = (req, res) => {
     const offset = Number(req.query.offset) || 0;
@@ -174,6 +175,25 @@ const getAvailableDates = (req, res) => {
         });
 };
 
+const updateReservationAndNotify = (req, res) => {
+    const { id } = req.params;
+    const { status } = req.body;
+    const { announce } = req.body;
+    const agentId = req.user.id;
+    reservationsAlter
+        .updateReservationAndNotify(id, agentId, { status, announce })
+        .then((updatedReservation) => {
+            if (updatedReservation) {
+                res.status(200).json(updatedReservation);
+            } else {
+                res.status(404).json({ message: "Reservation not found" });
+            }
+        })
+        .catch((err) => {
+            res.status(400).json({ message: err.message });
+        });
+};
+
 module.exports = {
     getAllReservations,
     getReservationById,
@@ -183,4 +203,5 @@ module.exports = {
     getReservationsByDateRange,
     getAvailableDates,
     getReservationsToWork,
+    updateReservationAndNotify,
 };

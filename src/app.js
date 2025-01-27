@@ -29,7 +29,7 @@ const notificationsRouter = require("./notifications/notifications.router");
 const chatsRouter = require("./chats/chats.routes");
 const issueRouter = require("./roomIssues/roomIssues.router");
 const cleaningRouter = require("./roomCleaning/roomCleanings.routes");
-
+const areasRouter = require("./areas/areas.router");
 const initModels = require("./models/initModels");
 const path = require("path");
 
@@ -121,7 +121,7 @@ db.authenticate()
     });
 
 // db.sync({ alter: true })
-db.sync({ alter: true })
+db.sync({ alter: false })
     .then(() => {
         console.log("Database Synced");
     })
@@ -151,6 +151,7 @@ app.use("/api/v1/notifications", notificationsRouter);
 app.use("/api/v1/chats", chatsRouter);
 app.use("/api/v1/issues", issueRouter);
 app.use("/api/v1/cleanings", cleaningRouter);
+app.use("/api/v1/areas", areasRouter);
 
 // Endpoint para generar la colección de Postman
 app.get("/api/v1/generate-postman-collection", (req, res) => {
