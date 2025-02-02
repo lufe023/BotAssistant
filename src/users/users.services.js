@@ -116,6 +116,40 @@ const registerUser = async (req, res) => {
     }
 };
 
+const registerClient = async (req, res) => {
+    const { firstName, email, phone, birthday, gender } = req.body;
+
+    // Validación de campos básicos
+    if (!firstName || !phone) {
+        return res.status(400).json({
+            message: "Se requieren los campos obligatorios",
+            fields: {
+                firstName: "string",
+                phone: "+521231231231",
+            },
+        });
+    }
+
+    // Filtrar solo campos no vacíos
+    const userData = {
+        firstName,
+        phone,
+        ...(email && { email }),
+        ...(birthday && { birthday }),
+        ...(gender && { gender }),
+        active: true,
+    };
+
+    try {
+        const newUser = await usersControllers.createClient(userData);
+        res.status(201).json(newUser);
+    } catch (err) {
+        res.status(500).json({
+            message: err.message || "Failed to register user",
+        });
+    }
+};
+
 const requestForgotPassword = (req, res) => {
     const email = req.body.email;
 
@@ -245,7 +279,6 @@ const deleteUser = (req, res) => {
 };
 
 //? My user services
-
 const getMyUser = (req, res) => {
     const id = req.user.id; //? req.user contiene la informacion del token desencriptado
     usersControllers
@@ -350,4 +383,5 @@ module.exports = {
     changeForgotPassword,
     changeUserRoleService,
     simpleFindUser,
+    registerClient,
 };

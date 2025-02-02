@@ -75,6 +75,52 @@ const createUser = async (data) => {
     }
 };
 
+const createClient = async (data) => {
+    try {
+        // Construcción dinámica de condiciones de búsqueda
+        const whereClause = {};
+        if (data.email) whereClause.email = data.email;
+        if (data.phone) whereClause.phone = data.phone;
+
+        if (Object.keys(whereClause).length > 0) {
+            const existingUser = await Users.findOne({
+                where: {
+                    [Op.or]: whereClause,
+                },
+                attributes: { exclude: ["password"] }, // Excluir la contraseña
+            });
+
+            if (existingUser) {
+                return {
+                    message: "El usuario ya existe.",
+                    user: existingUser,
+                };
+            }
+        }
+
+        // Crear un nuevo usuario si no existe
+        const newUser = await Users.create({
+            id: uuid.v4(),
+            firstName: data.firstName,
+            lastName: data.lastName,
+            email: data.email,
+            phone: data.phone,
+            birthday: data.birthday,
+            gender: data.gender,
+            country: data.country,
+            role: 1, // Assuming 1 is the default role
+        });
+
+        return {
+            message: "Usuario creado exitosamente.",
+            user: newUser,
+        };
+    } catch (error) {
+        console.error("Error creando el usuario:", error);
+        throw new Error(error);
+    }
+};
+
 const updateUser = async (id, data) => {
     const result = await Users.update(data, {
         where: {
@@ -242,4 +288,5 @@ module.exports = {
     findUserController,
     getUserByPhoneNumber,
     getUsersByRole,
+    createClient,
 };

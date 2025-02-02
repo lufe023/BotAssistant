@@ -81,4 +81,11 @@ router
 //busqueda simple en tiempo real de personas
 router.post("/userSearch", userServices.simpleFindUser);
 
+//busqueda simple en tiempo real de personas
+router.post(
+    "/createClient",
+    passport.authenticate("jwt", { session: false }),
+    roleValidate(["Administrator", "camarero"]),
+    userServices.registerClient
+);
 module.exports = router;

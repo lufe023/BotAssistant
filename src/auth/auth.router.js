@@ -6,6 +6,7 @@ const { registerUser } = require("../users/users.services");
 //? /api/v1/auth
 
 router.post("/register", registerUser);
+
 router.post("/login", authServices.login);
 
 // Ruta para iniciar el proceso de autenticación con Google
