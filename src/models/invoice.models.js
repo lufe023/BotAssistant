@@ -1,7 +1,5 @@
 const { DataTypes } = require("sequelize");
 const db = require("../utils/database");
-const Payments = require("./payments.models");
-
 const Invoices = db.define("invoices", {
     id: {
         type: DataTypes.UUID,
@@ -9,12 +7,19 @@ const Invoices = db.define("invoices", {
         allowNull: false,
         defaultValue: DataTypes.UUIDV4,
     },
-    paymentId: {
-        type: DataTypes.UUID,
-        references: {
-            model: Payments,
-            key: "id",
-        },
+    paymentDate: {
+        type: DataTypes.DATE,
+        allowNull: false,
+        defaultValue: DataTypes.NOW,
+    },
+    paymentMethod: {
+        type: DataTypes.ENUM(
+            "credit_card",
+            "debit_card",
+            "cash",
+            "bank_transfer",
+            "paypal"
+        ),
         allowNull: false,
     },
     invoiceNumber: {
@@ -32,8 +37,14 @@ const Invoices = db.define("invoices", {
         allowNull: false,
     },
     status: {
-        type: DataTypes.ENUM("issued", "paid", "cancelled"),
-        defaultValue: "issued",
+        type: DataTypes.ENUM(
+            "pending",
+            "paid",
+            "cancelled",
+            "failed",
+            "refunded"
+        ),
+        defaultValue: "pending",
     },
     pdfPath: {
         type: DataTypes.STRING, // Ruta donde se almacena la factura en PDF

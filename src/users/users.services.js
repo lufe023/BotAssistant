@@ -82,12 +82,11 @@ const registerUser = async (req, res) => {
     } = req.body;
 
     // Validación de campos básicos (simplificada)
-    if (!firstName || !lastName || !email || !password) {
+    if (!firstName || !email || !password) {
         return res.status(400).json({
             message: "Todos los campos deben ser llenados",
             fields: {
                 firstName: "string",
-                lastName: "string",
                 email: "example@example.com",
                 password: "string",
                 phone: "+521231231231",

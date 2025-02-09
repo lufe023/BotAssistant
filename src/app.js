@@ -11,7 +11,6 @@ const { Server } = require("socket.io");
 const chatFlow = require("./whatsapp/chatFlow");
 const notificationsControllers = require("./notifications/notifications.controllers");
 const jwt = require("jsonwebtoken");
-const chatServices = require("./chats/chats.controllers");
 
 //? Files
 const { port, jwtSecret } = require("./config");
@@ -30,6 +29,7 @@ const chatsRouter = require("./chats/chats.routes");
 const issueRouter = require("./roomIssues/roomIssues.router");
 const cleaningRouter = require("./roomCleaning/roomCleanings.routes");
 const areasRouter = require("./areas/areas.router");
+const configurationsRouter = require("./configurations/configurations.router");
 const initModels = require("./models/initModels");
 const path = require("path");
 
@@ -152,7 +152,7 @@ app.use("/api/v1/chats", chatsRouter);
 app.use("/api/v1/issues", issueRouter);
 app.use("/api/v1/cleanings", cleaningRouter);
 app.use("/api/v1/areas", areasRouter);
-
+app.use("/api/v1/configurations", configurationsRouter);
 // Endpoint para generar la colección de Postman
 app.get("/api/v1/generate-postman-collection", (req, res) => {
     const collection = {

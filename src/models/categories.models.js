@@ -1,7 +1,7 @@
 const db = require("../utils/database");
 const { DataTypes } = require("sequelize");
 
-const Areas = db.define("areas", {
+const Categories = db.define("categories", {
     id: {
         type: DataTypes.UUID,
         primaryKey: true,
@@ -16,20 +16,18 @@ const Areas = db.define("areas", {
         type: DataTypes.TEXT,
         allowNull: true,
     },
-    area_type: {
-        field: "area_type",
-        type: DataTypes.ENUM(
-            "rooms",
-            "social",
-            "restaurant",
-            "bar",
-            "pool",
-            "gym",
-            "other"
-        ),
-        defaultValue: "other",
+    parentCategoryId: {
+        type: DataTypes.UUID,
         allowNull: true,
+        references: {
+            model: "categories",
+            key: "id",
+        },
+    },
+    status: {
+        type: DataTypes.ENUM("active", "inactive"),
+        defaultValue: "active",
     },
 });
 
-module.exports = Areas;
+module.exports = Categories;

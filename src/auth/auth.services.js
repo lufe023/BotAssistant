@@ -29,7 +29,9 @@ const login = (req, res) => {
                         nivel: response.user_role.level,
                     });
                 } else {
-                    res.status(401).json({ message: "Invalid Credentials" });
+                    res.status(401).json({
+                        message: "Credenciales incorrectas",
+                    });
                 }
             })
             .catch((error) => {

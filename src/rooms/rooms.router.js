@@ -42,4 +42,12 @@ router.delete(
     roomsServices.deleteRoom
 );
 
+// Ruta para crear múltiples habitaciones
+router.post(
+    "/batch",
+    passport.authenticate("jwt", { session: false }),
+    roleValidate(["Administrator"]),
+    roomsServices.createRoomsBatch
+);
+
 module.exports = router;

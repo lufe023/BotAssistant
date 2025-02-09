@@ -192,17 +192,18 @@ const getRoomHistory = async (roomId) => {
         // Obtener todas las reservas de la habitación
         const reservations = await Reservations.findAll({
             where: { roomId },
-            include: [
-                {
-                    model: ServiceReservations, // Incluir las reservas de servicios
-                    include: [
-                        {
-                            model: Services, // Incluir los servicios relacionados
-                        },
-                    ],
-                    order: [["dispatchedAt", "ASC"]], // Ordenar por la fecha de despacho
-                },
-            ],
+            //aqui hay que cambiar el codigo para cambiar los modelos incluidos y reflejar los consumos de los clientes durante las estadías
+            // include: [
+            //     {
+            //         model: ServiceReservations, // Incluir las reservas de servicios
+            //         include: [
+            //             {
+            //                 model: Services, // Incluir los servicios relacionados
+            //             },
+            //         ],
+            //         order: [["dispatchedAt", "ASC"]], // Ordenar por la fecha de despacho
+            //     },
+            // ],
             order: [["checkIn", "ASC"]], // Ordenar las reservas por la fecha de entrada
         });
 
@@ -316,6 +317,16 @@ const getRoomHistory = async (roomId) => {
     }
 };
 
+const createMultipleRooms = async (roomData, roomNumbers) => {
+    const rooms = roomNumbers.map((number) => ({
+        ...roomData,
+        roomNumber: number,
+        id: uuid.v4(),
+    }));
+
+    return await Rooms.bulkCreate(rooms);
+};
+
 module.exports = {
     getAllRooms,
     getRoomById,
@@ -323,4 +334,5 @@ module.exports = {
     updateRoom,
     deleteRoom,
     getRoomHistory,
+    createMultipleRooms,
 };

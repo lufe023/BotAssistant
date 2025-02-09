@@ -109,6 +109,31 @@ const getRoomHistory = (req, res) => {
         });
 };
 
+const createRoomsBatch = async (req, res) => {
+    const { roomData, roomNumbers } = req.body;
+
+    if (!roomData || typeof roomData !== "object") {
+        return res
+            .status(400)
+            .json({ message: "roomData debe ser un objeto válido." });
+    }
+
+    try {
+        const rooms = await roomsControllers.createMultipleRooms(
+            roomData,
+            roomNumbers
+        );
+        return res.status(201).json({
+            message: `${rooms.length} habitaciones creadas exitosamente.`,
+            rooms,
+        });
+    } catch (error) {
+        return res
+            .status(500)
+            .json({ error: error, message: error.message, body: roomData });
+    }
+};
+
 module.exports = {
     getAllRooms,
     getRoomById,
@@ -116,4 +141,5 @@ module.exports = {
     updateRoom,
     deleteRoom,
     getRoomHistory,
+    createRoomsBatch,
 };

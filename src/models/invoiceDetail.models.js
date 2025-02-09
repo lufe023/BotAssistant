@@ -38,6 +38,20 @@ const InvoiceDetail = db.define("invoice_details", {
         allowNull: false,
         defaultValue: 0.0,
     },
+    orderType: {
+        type: DataTypes.ENUM("product", "service"),
+        allowNull: false,
+    },
+    assignedSpot: {
+        type: DataTypes.STRING,
+        allowNull: true,
+        comment:
+            "Ubicación del servicio o consumo (mesa, habitación, área específica, etc.)",
+    },
+    status: {
+        type: DataTypes.ENUM("pending", "in_progress", "served", "cancelled"),
+        defaultValue: "pending",
+    },
 });
 
 module.exports = InvoiceDetail;
