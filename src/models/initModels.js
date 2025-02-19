@@ -14,6 +14,8 @@ const Areas = require("./areas.models");
 const Invoices = require("./invoice.models");
 const InvoiceDetail = require("./invoiceDetail.models");
 const Items = require("./items.models");
+const OrderStatusTracking = require("./OrderStatusTracking");
+const FavoriteItems = require("./favoriteItems.models");
 
 const initModels = () => {
     // Relación entre Usuarios y Roles
@@ -82,6 +84,17 @@ const initModels = () => {
     // Relación entre Detalles de Factura e Items
     InvoiceDetail.belongsTo(Items, { foreignKey: "itemId" });
     Items.hasMany(InvoiceDetail, { foreignKey: "itemId" });
+
+    InvoiceDetail.hasMany(OrderStatusTracking, { foreignKey: "orderId" });
+    OrderStatusTracking.belongsTo(InvoiceDetail, { foreignKey: "orderId" });
+
+    // En el modelo Users
+    Users.hasMany(FavoriteItems, { foreignKey: "userId" });
+    FavoriteItems.belongsTo(Users, { foreignKey: "userId" });
+
+    // En el modelo Items
+    Items.hasMany(FavoriteItems, { foreignKey: "itemId" });
+    FavoriteItems.belongsTo(Items, { foreignKey: "itemId" });
 };
 
 module.exports = initModels;

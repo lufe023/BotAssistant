@@ -1,7 +1,7 @@
-const db = require("../utils/database");
+const db = require("../src/utils/database");
 const { DataTypes } = require("sequelize");
-const Reservations = require("./reservations.models");
-const Services = require("./services.models");
+const Reservations = require("../src/models/reservations.models");
+const Services = require("../src/models/services.models");
 
 const ServiceReservations = db.define("service_reservations", {
     id: {

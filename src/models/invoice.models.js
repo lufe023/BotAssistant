@@ -1,5 +1,6 @@
 const { DataTypes } = require("sequelize");
 const db = require("../utils/database");
+const Users = require("./users.models");
 const Invoices = db.define("invoices", {
     id: {
         type: DataTypes.UUID,
@@ -27,6 +28,14 @@ const Invoices = db.define("invoices", {
         unique: true,
         allowNull: false,
     },
+    userId: {
+        type: DataTypes.UUID,
+        allowNull: true,
+        references: {
+            model: Users, // Nombre de la tabla de usuarios
+            key: "id",
+        },
+    },
     issueDate: {
         type: DataTypes.DATE,
         allowNull: false,
@@ -42,10 +51,12 @@ const Invoices = db.define("invoices", {
             "paid",
             "cancelled",
             "failed",
-            "refunded"
+            "refunded",
+            "order"
         ),
         defaultValue: "pending",
     },
+
     pdfPath: {
         type: DataTypes.STRING, // Ruta donde se almacena la factura en PDF
         allowNull: true,
