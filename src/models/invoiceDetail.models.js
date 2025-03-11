@@ -1,7 +1,7 @@
 const { DataTypes } = require("sequelize");
 const db = require("../utils/database");
 const Invoice = require("./invoice.models");
-
+const Items = require("./items.models");
 const InvoiceDetail = db.define("invoice_details", {
     id: {
         type: DataTypes.UUID,
@@ -16,6 +16,15 @@ const InvoiceDetail = db.define("invoice_details", {
         },
         allowNull: false,
     },
+    itemId: {
+        type: DataTypes.UUID,
+        references: {
+            model: Items,
+            key: "id",
+        },
+        allowNull: false,
+    },
+
     itemName: {
         type: DataTypes.STRING,
         allowNull: false,

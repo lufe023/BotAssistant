@@ -53,14 +53,7 @@ const Items = db.define("items", {
         type: DataTypes.ENUM("active", "inactive"),
         defaultValue: "active",
     },
-    supplierId: {
-        type: DataTypes.UUID,
-        allowNull: true,
-        references: {
-            model: Suppliers,
-            key: "id",
-        },
-    },
+
     categoryId: {
         type: DataTypes.UUID,
         allowNull: true,

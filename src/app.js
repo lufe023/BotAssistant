@@ -33,6 +33,7 @@ const configurationsRouter = require("./configurations/configurations.router");
 const invoiceRouter = require("./invoices/invoices.routes");
 const itemsRouter = require("./items/items.router");
 const favoriteRouter = require("./favoriteItems/favoriteItems.router");
+const departmentsRouter = require("./departments/departments.router");
 const initModels = require("./models/initModels");
 const path = require("path");
 
@@ -124,7 +125,9 @@ db.authenticate()
     });
 
 // db.sync({ alter: true })
-db.sync({ alter: false })
+db.sync({
+    alter: false,
+})
     .then(() => {
         console.log("Database Synced");
     })
@@ -156,9 +159,10 @@ app.use("/api/v1/issues", issueRouter);
 app.use("/api/v1/cleanings", cleaningRouter);
 app.use("/api/v1/areas", areasRouter);
 app.use("/api/v1/configurations", configurationsRouter);
-app.use("/api/v1/invoiceRouter", invoiceRouter);
+app.use("/api/v1/invoice", invoiceRouter);
 app.use("/api/v1/items", itemsRouter);
 app.use("/api/v1/favorites", favoriteRouter);
+app.use("/api/v1/departments", departmentsRouter);
 
 // Endpoint para generar la colección de Postman
 app.get("/api/v1/generate-postman-collection", (req, res) => {

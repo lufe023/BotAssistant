@@ -1,4 +1,4 @@
-const { DataTypes } = require("sequelize");
+const { DataTypes, Sequelize } = require("sequelize");
 const db = require("../utils/database");
 const Users = require("./users.models");
 const Invoices = db.define("invoices", {
@@ -24,10 +24,13 @@ const Invoices = db.define("invoices", {
         allowNull: false,
     },
     invoiceNumber: {
-        type: DataTypes.STRING,
+        type: DataTypes.INTEGER,
+        allowNull: true,
+        //autoIncrement: true, recordar que al momento de crear la tabla se debe agregar el autoincrement con sql para evitar problemas de sequelize con postgres
         unique: true,
-        allowNull: false,
+        // defaultValue: Sequelize.literal("nextval('invoice_number_seq')"),
     },
+
     userId: {
         type: DataTypes.UUID,
         allowNull: true,
@@ -60,6 +63,14 @@ const Invoices = db.define("invoices", {
     pdfPath: {
         type: DataTypes.STRING, // Ruta donde se almacena la factura en PDF
         allowNull: true,
+    },
+    vendorId: {
+        type: DataTypes.UUID,
+        allowNull: false,
+        references: {
+            model: Users, // Nombre de la tabla de usuarios
+            key: "id",
+        },
     },
 });
 
