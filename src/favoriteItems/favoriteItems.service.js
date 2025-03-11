@@ -1,4 +1,5 @@
-const FavoriteItems = require("../models/favoriteItems.models");
+const FavoriteItems = require("../models/favorIteItems.modelss");
+
 const uuid = require("uuid");
 const Items = require("../models/items.models");
 
