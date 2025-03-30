@@ -1,8 +1,8 @@
 //users.router.js
 const router = require("express").Router();
-const passport = require("passport");
 const userServices = require("./users.services");
 const roleValidate = require("../middlewares/role.middleware");
+const passport = require("passport");
 require("../middlewares/auth.middleware")(passport);
 
 //? rutas raiz

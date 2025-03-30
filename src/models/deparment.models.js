@@ -18,4 +18,16 @@ const Department = db.define("department", {
     },
 });
 
+Department.sync().then(() => {
+    Department.findAndCountAll().then((result) => {
+        if (result.count === 0) {
+            Department.bulkCreate([
+                {
+                    name: "Sin departamento",
+                    description: "Sin departamento no recomendado usar",
+                },
+            ]);
+        }
+    });
+});
 module.exports = Department;

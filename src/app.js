@@ -8,7 +8,6 @@ const db = require("./utils/database");
 const fs = require("fs");
 const http = require("http");
 const { Server } = require("socket.io");
-const chatFlow = require("./whatsapp/chatFlow");
 const notificationsControllers = require("./notifications/notifications.controllers");
 const jwt = require("jsonwebtoken");
 
@@ -17,7 +16,7 @@ const { port, jwtSecret } = require("./config");
 //* Routes
 const userRouter = require("./users/users.router");
 const authRouter = require("./auth/auth.router");
-const whatsappRouter = require("./whatsapp/whatsapp.router");
+//const whatsappRouter = require("./whatsapp/whatsapp.router");
 const imagesRouter = require("./images/images.router");
 const roomsRouter = require("./rooms/rooms.router");
 const reservationsRouter = require("./reservations/reservations.router");
@@ -33,6 +32,7 @@ const configurationsRouter = require("./configurations/configurations.router");
 const invoiceRouter = require("./invoices/invoices.routes");
 const itemsRouter = require("./items/items.router");
 const favoriteRouter = require("./favoriteItems/favoriteItems.router");
+const stockRouter = require("./stock/stock.router");
 const departmentsRouter = require("./departments/departments.router");
 const initModels = require("./models/initModels");
 const path = require("path");
@@ -146,7 +146,7 @@ app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
 app.use("/api/v1/users", userRouter);
 app.use("/api/v1/auth", authRouter);
-app.use("/api/v1/whatsapp", whatsappRouter);
+// app.use("/api/v1/whatsapp", whatsappRouter);
 app.use("/api/v1/images", imagesRouter);
 app.use("/api/v1/rooms", roomsRouter);
 app.use("/api/v1/reservations", reservationsRouter);
@@ -163,7 +163,7 @@ app.use("/api/v1/invoice", invoiceRouter);
 app.use("/api/v1/items", itemsRouter);
 app.use("/api/v1/favorites", favoriteRouter);
 app.use("/api/v1/departments", departmentsRouter);
-
+app.use("/api/v1/stock", stockRouter);
 // Endpoint para generar la colección de Postman
 app.get("/api/v1/generate-postman-collection", (req, res) => {
     const collection = {

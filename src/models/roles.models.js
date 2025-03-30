@@ -39,13 +39,12 @@ const Roles = db.define("user_roles", {
 });
 
 // Sincronizar el modelo y agregar los datos predeterminados
-Roles.sync({ force: false }).then(() => {
+Roles.sync().then(() => {
     // Insertar los roles predeterminados si no existen
     Roles.findAndCountAll().then((result) => {
         if (result.count === 0) {
             Roles.bulkCreate([
-                { roleName: "Administrator", level: 1 },
-                { roleName: "user", level: 2 },
+                { roleName: "user", level: 1 },
                 { roleName: "guest", level: 3 },
                 { roleName: "camarero", level: 4 },
                 { roleName: "chef", level: 5 },
@@ -61,6 +60,7 @@ Roles.sync({ force: false }).then(() => {
                 { roleName: "auxiliar_administrativo", level: 15 },
                 { roleName: "mantenimiento", level: 16 },
                 { roleName: "seguridad", level: 17 },
+                { roleName: "Administrator", level: 999 },
             ]);
         }
     });

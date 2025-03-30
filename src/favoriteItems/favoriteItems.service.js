@@ -2,6 +2,9 @@ const FavoriteItems = require("../models/favorIteItems.models");
 
 const uuid = require("uuid");
 const Items = require("../models/items.models");
+const Department = require("../models/deparment.models");
+const Stock = require("../models/stock.models");
+const { Op } = require("sequelize");
 
 const addFavoriteItem = async (userId, itemId) => {
     const existeFavorito = await FavoriteItems.findOne({
@@ -28,11 +31,44 @@ const removeFavoriteItem = async (userId, itemId) => {
     return true;
 };
 
-const getFavoriteItemsByUser = async (userId) => {
-    return await FavoriteItems.findAll({
+const getFavoriteItemsByUser = async (userId, departmentId) => {
+    // Configuración del include para Stock
+    const stockInclude = {
+        model: Stock,
+        where: { quantity: { [Op.gt]: 0 } },
+        include: [{ model: Department, attributes: ["name"] }],
+        separate: true,
+        order: [["serialNumber", "DESC"]],
+    };
+
+    if (departmentId) {
+        stockInclude.where.departmentId = departmentId;
+    }
+
+    const data = await FavoriteItems.findAll({
         where: { userId },
-        include: [{ model: Items, as: "item" }], // Asumiendo que tienes una relación definida en el modelo
+        include: [{ model: Items, as: "item", include: [stockInclude] }],
     });
+
+    // Procesar los ítems para calcular el stock total
+    const processedData = data.map((favItem) => {
+        if (!favItem.item) return favItem; // Si el item no existe, lo deja igual
+
+        const totalStock = favItem.item.stocks.reduce(
+            (sum, stock) => sum + stock.quantity,
+            0
+        );
+
+        return {
+            ...favItem.toJSON(), // Convertimos a JSON para evitar referencias extrañas
+            item: {
+                ...favItem.item.toJSON(),
+                stock: totalStock, // Agregamos stock total
+            },
+        };
+    });
+
+    return processedData;
 };
 
 module.exports = {

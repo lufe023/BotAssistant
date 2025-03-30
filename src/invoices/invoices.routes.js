@@ -25,6 +25,7 @@ router.post(
     ]),
     invoicesController.createInvoice
 );
+
 router.put("/:id", invoicesController.updateInvoice);
 router.delete("/:id", invoicesController.deleteInvoice);
 

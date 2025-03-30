@@ -42,13 +42,16 @@ async function removeFavoriteItem(req, res) {
 }
 
 async function getFavoriteItemsByUser(req, res) {
+    const departmentId = req.query.departmentId;
     try {
         const userId = req.user.id;
         const favoriteItems = await FavoriteItemsService.getFavoriteItemsByUser(
-            userId
+            userId,
+            departmentId
         );
         res.status(200).json(favoriteItems);
     } catch (error) {
+        console.log(error);
         res.status(500).json({ error: error.message });
     }
 }

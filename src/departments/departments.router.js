@@ -13,6 +13,7 @@ const viewRoles = [
     "supervisor",
     "administrativo",
     "auxiliar_administrativo",
+    "camarero",
 ];
 const modifyRoles = ["Administrator", "gerente", "supervisor"];
 

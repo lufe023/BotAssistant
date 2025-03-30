@@ -10,6 +10,10 @@ const Stock = db.define("stock", {
         primaryKey: true,
         defaultValue: DataTypes.UUIDV4,
     },
+    serialNumber: {
+        type: DataTypes.STRING, // Debe ser STRING si quieres usar SN-XXXX
+        allowNull: false,
+    },
     itemId: {
         type: DataTypes.UUID,
         allowNull: false,
@@ -38,6 +42,22 @@ const Stock = db.define("stock", {
             model: Suppliers,
             key: "id",
         },
+    },
+    batchNumber: {
+        type: DataTypes.STRING,
+        allowNull: true,
+    },
+    expirationDate: {
+        type: DataTypes.DATE,
+        allowNull: true,
+    },
+    purchaseDate: {
+        type: DataTypes.DATE,
+        allowNull: true,
+    },
+    costPrice: {
+        type: DataTypes.FLOAT,
+        allowNull: true,
     },
 });
 

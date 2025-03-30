@@ -65,7 +65,7 @@ const findItemOnTimeController = async (req, res) => {
     let { sWord } = req.body;
 
     sWord = typeof sWord === "string" ? sWord.trim() : sWord;
-
+    const { departmentId } = req.body;
     // Asegurar que sea string y que no esté vacío después de trim()
     if (typeof sWord !== "string" || !sWord) {
         return res.status(400).json({
@@ -75,7 +75,11 @@ const findItemOnTimeController = async (req, res) => {
     }
 
     try {
-        const data = await ItemsService.findItemOnTimeService(sWord);
+        console.log("el departamento es", departmentId);
+        const data = await ItemsService.findItemOnTimeService(
+            sWord,
+            departmentId
+        );
         res.status(200).json({ data, busqueda: sWord });
     } catch (err) {
         res.status(400).json({ err });
@@ -99,6 +103,7 @@ const findItemByBarcodeController = async (req, res) => {
         const data = await ItemsService.findItemOnBybarcodeService(sWord);
         res.status(200).json({ data, busqueda: sWord });
     } catch (err) {
+        console.log(err);
         res.status(400).json({ err });
     }
 };

@@ -9,6 +9,14 @@ const Items = db.define("items", {
         primaryKey: true,
         allowNull: false,
     },
+    measurementUnit: {
+        type: DataTypes.STRING,
+        allowNull: true,
+    },
+    measurementValue: {
+        type: DataTypes.DECIMAL(10, 2),
+        allowNull: true,
+    },
     name: {
         type: DataTypes.STRING,
         allowNull: false,
