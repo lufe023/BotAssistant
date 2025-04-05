@@ -61,7 +61,10 @@ const Items = db.define("items", {
         type: DataTypes.ENUM("active", "inactive"),
         defaultValue: "active",
     },
-
+    infiniteStock: {
+        type: DataTypes.BOOLEAN,
+        defaultValue: false,
+    },
     categoryId: {
         type: DataTypes.UUID,
         allowNull: true,

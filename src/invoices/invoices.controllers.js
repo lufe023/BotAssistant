@@ -1,4 +1,5 @@
 // controllers/invoices.controllers.js
+const Items = require("../models/items.models");
 const { getUserById } = require("../users/users.controllers");
 const invoicesServices = require("./invoices.services");
 
@@ -35,48 +36,82 @@ const getInvoiceById = async (req, res) => {
     }
 };
 
+// Función para verificar permisos de asignación de vendedor
+const canAssignVendor = (user) => {
+    const allowedRoles = [
+        "Administrator",
+        "gerente",
+        "supervisor",
+        "auxiliar_administrativo",
+    ];
+    return allowedRoles.includes(user.user_role?.roleName);
+};
+
+// Manejador de errores para facturas
+const handleInvoiceError = (res, error) => {
+    console.error("Error en facturación:", error);
+
+    if (error.name === "SequelizeValidationError") {
+        return res.status(400).json({
+            error: "Error de validación",
+            details: error.errors.map((e) => e.message),
+        });
+    }
+
+    res.status(500).json({
+        error: error.message || "Error interno al procesar la factura",
+    });
+};
+
 const createInvoice = async (req, res) => {
     try {
         const { cliente, total, invoiceDetails, paymentMethod } = req.body;
 
-        //funcion incompleta, se necisita
-        const roles = await getUserById(req.user.id);
+        // Verificar permisos del usuario
+        const user = await getUserById(req.user.id);
+        const vendorId = canAssignVendor(user)
+            ? req.body.vendor || req.user.id
+            : req.user.id;
 
-        const hasPermission = [
-            "Administrator",
-            "gerente",
-            "supervisor",
-            "auxiliar_administrativo",
-        ].includes(roles.user_role.roleName);
+        // Obtener información de infiniteStock para cada item
+        const enhancedDetails = await Promise.all(
+            invoiceDetails.map(async (detail) => {
+                const item = await Items.findByPk(detail.itemId, {
+                    attributes: ["infiniteStock"],
+                });
+                return {
+                    ...detail,
+                    orderType: detail.orderType || "product",
+                    infiniteStock: item?.infiniteStock || false,
+                };
+            })
+        );
 
-        let vendorId = "";
-        if (hasPermission) {
-            vendorId = req.body.vendor || req.user.id;
-        } else {
-            vendorId = req.user.id;
+        // Validar stock (ignora los que tienen infiniteStock)
+        const stockValidation =
+            await invoicesServices.validateStockByDepartment(enhancedDetails);
+        if (!stockValidation.valid) {
+            return res.status(400).json({
+                error: "Problemas con el inventario",
+                errors: stockValidation.errors,
+            });
         }
 
-        if (!invoiceDetails || invoiceDetails.length === 0) {
-            return res
-                .status(400)
-                .json({ error: "La factura no tiene productos" });
-        }
-
-        const newInvoice = await invoicesServices.createInvoice({
-            clienteNombre: cliente.firstName,
-            clienteTelefono: cliente.telefono,
-            clienteEmail: cliente.email,
-            userId: cliente.id,
-            paymentMethod,
+        // Crear factura
+        const newInvoice = await invoicesServices.createInvoiceTransaction({
+            clienteNombre: cliente.firstName || "Consumidor Final",
+            clienteTelefono: cliente.telefono || "",
+            clienteEmail: cliente.email || "",
             total,
-            invoiceDetails,
+            paymentMethod,
+            invoiceDetails: enhancedDetails,
             vendorId,
+            userId: cliente.id || null,
         });
 
-        res.status(201).json(roles);
+        res.status(201).json(newInvoice);
     } catch (error) {
-        console.error("Error al crear la factura:", error);
-        res.status(500).json({ error: error.message });
+        handleInvoiceError(res, error);
     }
 };
 
